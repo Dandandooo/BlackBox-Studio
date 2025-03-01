@@ -22,12 +22,18 @@ export default function DraggableBox({
   const [nodeId] = useState(() => id || `node-${nodeCounter++}`);
   const [calculatedOutputs, setCalculatedOutputs] = useState(outputValues);
 
+  // When dragging, update the position
   const handleDrag = (e, data) => {
     setPosition({ x: data.x, y: data.y });
   };
 
+  // Recompute outputs if all inputs are valid
   useEffect(() => {
-    if (nodeFunction && inputValues.length === inputs && inputValues.every(val => val !== undefined)) {
+    if (
+      nodeFunction &&
+      inputValues.length === inputs &&
+      inputValues.every((val) => val !== undefined)
+    ) {
       const result = nodeFunction(...inputValues);
       setCalculatedOutputs(Array.isArray(result) ? result : [result]);
     } else {
@@ -35,9 +41,10 @@ export default function DraggableBox({
     }
   }, [inputValues, inputs, nodeFunction]);
 
+  // Keep outputs in sync with the parent whenever outputValues changes
   useEffect(() => {
-    setCalculatedOutputs(outputValues); // Sync outputValues with the parent state
-  }, [outputValues]); // Whenever outputValues change, update the state
+    setCalculatedOutputs(outputValues);
+  }, [outputValues]);
 
   return (
     <Draggable
@@ -59,7 +66,8 @@ export default function DraggableBox({
         {/* Inputs */}
         <div className="connection-container input-container">
           {[...Array(inputs)].map((_, i) => {
-            const isConnected = getConnectionStatus && getConnectionStatus(nodeId, 'input', i.toString());
+            const isConnected =
+              getConnectionStatus && getConnectionStatus(nodeId, "input", i.toString());
             const value = inputValues[i];
             return (
               <div key={`input-${i}`} className="connection-point-wrapper">

@@ -9,6 +9,12 @@
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
 }
 
+.draggable-box.minecraft {
+    background-image: url("/block.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
 .drag-handle {
   font-family:'Monocraft', Times, serif;
   cursor: move;
@@ -81,13 +87,17 @@
 }
 
 .input-point.connected {
-  background-color: rgb(74, 222, 128); /* bg-green-400 */
+  background-color: crimson; /* bg-green-400 */
   min-width: 1.6rem;
   width: auto;
   height: 1.6rem;
   transform: translateY(-25%);
   border-radius: 0.4rem;
   box-shadow: 0 0 0 2px rgb(229, 255, 231); /* ring-2 ring-green-200 */
+}
+
+.input-point.connected:has(.value-label) {
+  background-color: rgb(74, 222, 128);
 }
 
 .output-point {
