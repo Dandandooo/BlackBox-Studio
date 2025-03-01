@@ -1,7 +1,8 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: CaskaydiaCove Nerd Font, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
-  font-weight: 400;
+  font-weight: 800;
+  /* background-color: #2C2525; */
 }
 
 html,
@@ -11,12 +12,50 @@ body,
   margin: 0;
 }
 
+/* .react-flow__node {
+  box-shadow: 0px 0.51px 1.01px 0px rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  background-color: #2C2525;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 1rem;
+  font-size: 1rem;
+  flex-direction: column;
+  border: 1px solid #2C2525;
+  color: #2C2525;
+} */
+
+.react-flow__controls {
+  background: transparent;
+  box-shadow: none;
+}
+
+.react-flow__controls-button {
+  margin: 0.1rem;
+  border-radius: 0.5rem;
+  /* box-shadow: 0px 0px 0px 2px rebeccapurple; */
+}
+
+.react-flow__minimap {
+  border-radius: 0.5rem;
+  border: 3px solid black;
+  overflow:hidden;
+}
+
+/* .react-flow__pane {
+  background-image: "/dirt.jpg";
+} */
+
 .context-menu {
   background: white;
   border-style: solid;
   box-shadow: 10px 19px 20px rgba(0, 0, 0, 10%);
+  border-radius: 1rem;
   position: absolute;
   z-index: 10;
+  overflow: hidden;
 }
 
 .context-menu button {
@@ -28,5 +67,25 @@ body,
 }
 
 .context-menu button:hover {
-  background: white;
+  /* background: white; */
+  filter: brightness(0.9);
+}
+
+.theme-switcher {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  z-index: 10;
+  width: 2.5em;
+  height: 2.5em;
+  border-radius: 0.5rem;
+  border: 3px;
+  vertical-align: middle;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.react-flow__attribution {
+  display: none;
 }

@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { useReactFlow } from '@xyflow/react';
 
-export default function ContextMenu({
+export default function NodeContextMenu({
   id,
   top,
   left,
@@ -27,8 +27,8 @@ export default function ContextMenu({
   }, [id, getNode, addNodes]);
 
   const deleteNode = useCallback(() => {
-    setNodes((nodes) => nodes.filter((node) => node.id !== id));
-    setEdges((edges) => edges.filter((edge) => edge.source !== id));
+    // setNodes((nodes) => nodes.filter((node) => node.id !== id));
+    // setEdges((edges) => edges.filter((edge) => edge.source !== id));
   }, [id, setNodes, setEdges]);
 
   return (
