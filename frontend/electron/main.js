@@ -19,7 +19,7 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-  rustProcess = spawn('./backend/target/release/backend');
+  rustProcess = spawn('../backend/target/debug/backend'); // TODO change this to release
   console.log('Rust backend started');
   createWindow();
 });
