@@ -42,13 +42,11 @@ export default function NodeEditor() {
   const handleConnectionsUpdate = (updatedConnections) => {
     const updatedNodes = { ...nodes };
 
-    // Function to update a single node's inputs and outputs
     const updateNode = (nodeId) => {
       const node = updatedNodes[nodeId];
-      if (!node) return; // Node might have been deleted
+      if (!node) return;
 
-      // Collect input values based on connections
-      const newInputs = Array(node.inputs).fill(undefined); // Initialize with undefined
+      const newInputs = Array(node.inputs).fill(undefined);
       updatedConnections.forEach(connection => {
         if (connection.end.nodeId === nodeId) {
           const startNode = updatedNodes[connection.start.nodeId];
@@ -59,22 +57,19 @@ export default function NodeEditor() {
       });
       node.inputValues = newInputs;
 
-      // Only calculate output if all inputs are valid
       if (node.inputValues.length === node.inputs && node.inputValues.every(val => val !== undefined && val !== null)) {
         node.outputValues = calculateNodeOutput(node);
       } else {
-        node.outputValues = []; // Reset outputs if not all inputs are valid
+        node.outputValues = [];
       }
     };
 
-    // Update all nodes involved in the connections
     const affectedNodes = new Set();
     updatedConnections.forEach(connection => {
       affectedNodes.add(connection.start.nodeId);
       affectedNodes.add(connection.end.nodeId);
     });
 
-    // Convert the Set to an Array and process each node
     Array.from(affectedNodes).forEach(nodeId => {
       updateNode(nodeId);
     });
@@ -82,7 +77,6 @@ export default function NodeEditor() {
     setNodes(updatedNodes);
   };
 
-  
   const countFunctionArgs = (funcStr) => {
     const match = funcStr.match(/\(([^)]*)\)/);
     if (match && match[1]) {
@@ -104,24 +98,22 @@ export default function NodeEditor() {
     const nodeIdError = validateNodeId(newNode.id);
     if (nodeIdError) {
       setError(nodeIdError);
-      return; // Stop if node ID is invalid
+      return;
     }
 
     let parsedFunction;
 
-    // Check if the provided function is valid
     try {
       if (newNode.nodeFunction && typeof newNode.nodeFunction === 'string') {
         const func = new Function('return ' + newNode.nodeFunction);
         parsedFunction = func();
 
-        // Validate function args match inputs
         const numArgs = countFunctionArgs(newNode.nodeFunction);
         if (numArgs !== newNode.inputs) {
           setError(`The number of inputs (${newNode.inputs}) must match the number of function arguments (${numArgs}).`);
-          return; // Stop if the validation fails
+          return;
         } else {
-          setError(''); // Clear any existing error
+          setError('');
         }
       } else {
         throw new Error('Function is not provided or invalid');
@@ -135,11 +127,8 @@ export default function NodeEditor() {
       const newNodes = { ...prevNodes };
       const newId = newNode.id;
 
-      // Find the highest y position in the existing nodes
       const lowestY = Math.min(...Object.values(prevNodes).map(node => node.position.y));
-
-      // Position the new node below the lowest node and to the left
-      const newNodePosition = { x: 300, y: lowestY + 100 };  // 50px gap below the lowest node
+      const newNodePosition = { x: 300, y: lowestY + 100 };
 
       newNodes[newId] = {
         id: newId,
@@ -164,9 +153,13 @@ export default function NodeEditor() {
 
   const nodeKeys = Object.keys(nodes);
 
+  // Default large canvas size (5000px for width and height)
+  const canvasWidth = 5000; 
+  const canvasHeight = 5000; 
+
   return (
-    <div className="w-full h-screen bg-gray-800 p-8 flex flex-row overflow-auto">
-      <div className="relative w-[3000px] h-[3000px]">
+    <div className="w-${canvasWidth}px bg-gray-800 p-8 flex flex-row overflow-auto">
+      <div className="relative" style={{ width: `${canvasWidth}px`, height: `${canvasHeight}px` }}>
         <ConnectionManager onUpdateConnections={handleConnectionsUpdate}>
           {nodeKeys.map((key) => {
             const node = nodes[key];
@@ -188,7 +181,6 @@ export default function NodeEditor() {
         </ConnectionManager>
       </div>
 
-      {/* Form to add a new node */}
       <div className="absolute top-8 left-8 bg-gray-700 p-4 rounded-md w-[200px]">
         <h2 className="text-white text-lg mb-4">Add Node</h2>
         <form onSubmit={handleAddNode}>
@@ -225,7 +217,7 @@ export default function NodeEditor() {
             />
           </div>
           <div className="mb-2">
-            <label className="text-white">Function (optional)</label>
+            <label className="text-white">Function</label>
             <input
               type="text"
               className="p-2 mt-1 w-full"
