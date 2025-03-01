@@ -1,15 +1,16 @@
 "use client";
 import Draggable from 'react-draggable';
 import { useRef, useState, useEffect } from 'react';
+import './DraggableBox.css';
 
 let nodeCounter = 0;
 
-export default function DraggableBox({ 
-  children, 
-  className, 
-  defaultPosition, 
-  inputs = 1, 
-  outputs = 1, 
+export default function DraggableBox({
+  children,
+  className,
+  defaultPosition,
+  inputs = 1,
+  outputs = 1,
   id,
   getConnectionStatus,
   inputValues = [],
@@ -39,40 +40,41 @@ export default function DraggableBox({
   }, [outputValues]); // Whenever outputValues change, update the state
 
   return (
-    <Draggable 
-      nodeRef={nodeRef} 
-      defaultPosition={defaultPosition} 
+    <Draggable
+      nodeRef={nodeRef}
+      defaultPosition={defaultPosition}
       onDrag={handleDrag}
       handle=".drag-handle"
     >
       <div
         ref={nodeRef}
         data-node-id={nodeId}
-        className={`relative bg-blue-500 w-48 h-48 text-white p-4 rounded-2xl shadow-lg ${className}`}
+        className={`draggable-box ${className}`}
       >
         {/* Header Section with Text */}
-        <div className="drag-handle cursor-move absolute top-0 left-0 right-0 h-8 bg-blue-600 rounded-t-2xl flex justify-between items-center px-2">
-          <h3 className="text-white text-sm">{nodeId}</h3> {/* Display Node ID or any other text */}
+        <div className="drag-handle">
+          <h3 className="drag-handle-title">{nodeId}</h3>
         </div>
 
         {/* Inputs */}
-        <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-around items-center">
+        <div className="connection-container input-container">
           {[...Array(inputs)].map((_, i) => {
             const isConnected = getConnectionStatus && getConnectionStatus(nodeId, 'input', i.toString());
             const value = inputValues[i];
             return (
-              <div key={`input-${i}`} className="relative">
-                <div 
-                  className={`w-3 h-3 rounded-full cursor-pointer connection-point -ml-1.5 ${
-                    isConnected ? 'bg-green-400 ring-2 ring-green-200' : 'bg-white'
-                  }`} 
-                  data-type="input" 
+              <div key={`input-${i}`} className="connection-point-wrapper">
+                <div
+                  className={`connection-point input-point ${isConnected ? 'connected' : ''}`}
+                  data-type="input"
                   data-id={i}
                   title={isConnected ? "Connected" : "Input"}
-                  style={{ userSelect: 'none' }} // Add this to disable text selection
-                />
-                {value !== undefined && (
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs px-1 py-0.5 rounded">
+                >
+                  {isConnected && value !== undefined ? (
+                    <span className="value-label">{value}</span>
+                  ) : null}
+                </div>
+                {!isConnected && value !== undefined && (
+                  <span className="value-label input-value external">
                     {value}
                   </span>
                 )}
@@ -80,34 +82,34 @@ export default function DraggableBox({
             );
           })}
         </div>
-        
+
         {/* Outputs */}
-        <div className="absolute right-0 top-0 bottom-0 flex flex-col justify-around items-center">
+        <div className="connection-container output-container">
           {[...Array(outputs)].map((_, i) => {
             const value = calculatedOutputs[i];
             return (
-              <div key={`output-${i}`} className="relative">
-                <div 
-                  className="w-3 h-3 bg-white rounded-full cursor-pointer connection-point -mr-1.5" 
-                  data-type="output" 
+              <div key={`output-${i}`} className="connection-point-wrapper">
+                <div
+                  className="connection-point output-point"
+                  data-type="output"
                   data-id={i}
                   title="Output"
-                  style={{ userSelect: 'none' }} // Add this to disable text selection
-                />
-                {value !== undefined && (
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs px-1 py-0.5 rounded">
-                    {value}
-                  </span>
-                )}
+                >
+                  {value !== undefined && (
+                    <span className="value-label output-value">
+                      {value}
+                    </span>
+                  )}
+                </div>
               </div>
             );
           })}
         </div>
 
         {/* Node Content */}
-        <div className="mt-6" style={{ userSelect: 'none' }}>
+        <div className="node-content">
           {/* Display nodeFunction as string */}
-          <div className="text-xs p-5 text-white overflow-auto" style={{ whiteSpace: 'pre-wrap' }}>
+          <div className="function-display">
             {nodeFunction ? nodeFunction.toString() : "No function defined"}
           </div>
         </div>
