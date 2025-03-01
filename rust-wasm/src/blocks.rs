@@ -8,7 +8,6 @@ enum Language {
 }
 
 struct Argument {
-    
 }
 
 struct Data<T> {
