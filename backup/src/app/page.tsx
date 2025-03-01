@@ -33,30 +33,35 @@ export default function NodeEditor() {
   const handleConnectionsUpdate = (updatedConnections) => {
     const updatedNodes = { ...nodes };
   
+    // A helper function to update the input values and propagate output updates
+    const updateNodeInputsAndOutputs = (nodeId) => {
+      const node = updatedNodes[nodeId];
+  
+      // Update the node's output value
+      updatedNodes[nodeId].outputValues = calculateNodeOutput(node);
+  
+      // Propagate this node's output to connected nodes
+      updatedConnections.forEach((connection) => {
+        if (connection.start.nodeId === nodeId) {
+          const { end } = connection;
+          const outputValue = updatedNodes[nodeId].outputValues[connection.start.id];
+          
+          if (outputValue !== undefined) {
+            updatedNodes[end.nodeId].inputValues[end.id] = outputValue;
+            updateNodeInputsAndOutputs(end.nodeId); // Recursively update dependent nodes
+          }
+        }
+      });
+    };
+  
     updatedConnections.forEach((connection) => {
-      const { start, end } = connection;
-      const outputValue = nodes[start.nodeId]?.outputValues[start.id];
-  
-      if (outputValue !== undefined) {
-        updatedNodes[end.nodeId].inputValues[end.id] = outputValue;
-      }
+      // For every connection, update the start node's output and propagate changes
+      updateNodeInputsAndOutputs(connection.start.nodeId);
     });
   
-    // Update the output values for all nodes after input values are updated
-    const nodesWithUpdatedOutputs = updateAllNodeOutputs(updatedNodes);
-  
-    // Set the nodes state with the updated nodes (input and output values)
-    setNodes(nodesWithUpdatedOutputs);
-  
-    // Filter out unnecessary connection data
-    const filteredConnections = updatedConnections.map(connection => {
-      const { startX, startY, endX, endY, ...rest } = connection;
-      return rest;
-    });
-  
-    // Update the connections state
-    setConnections(filteredConnections);
+    setNodes(updatedNodes);
   };
+  
 
   useEffect(() => {
     const updatedNodes = updateAllNodeOutputs({ ...nodes });
@@ -66,32 +71,28 @@ export default function NodeEditor() {
   const nodeKeys = Object.keys(nodes);
 
   return (
-    <div className="w-screen h-screen bg-gray-800 p-8 flex flex-row">
-      <div className="pr-10">
-        <h2>Connections:</h2>
-        <pre>{JSON.stringify(connections, null, 2)}</pre>
-        <h3>Node Data:</h3>
-        <pre>{JSON.stringify(nodes, null, 2)}</pre>
+    <div className="w-full h-screen bg-gray-800 p-8 flex flex-row overflow-auto">
+      <div className="relative w-[3000px] h-[3000px]">
+        <ConnectionManager onUpdateConnections={handleConnectionsUpdate}>
+          {nodeKeys.map((key) => {
+            const node = nodes[key];
+            return (
+              <DraggableBox
+                key={node.id}
+                id={node.id}
+                defaultPosition={node.position}
+                inputs={node.inputs}
+                outputs={node.outputs}
+                inputValues={node.inputValues}
+                outputValues={node.outputValues}
+                nodeFunction={node.nodeFunction}
+              >
+                {node.id}
+              </DraggableBox>
+            );
+          })}
+        </ConnectionManager>
       </div>
-      <ConnectionManager onUpdateConnections={handleConnectionsUpdate}>
-        {nodeKeys.map((key) => {
-          const node = nodes[key];
-          return (
-            <DraggableBox
-              key={node.id}
-              id={node.id}
-              defaultPosition={node.position}
-              inputs={node.inputs}
-              outputs={node.outputs}
-              inputValues={node.inputValues}
-              outputValues={node.outputValues}
-              nodeFunction={node.nodeFunction}
-            >
-              {node.id}
-            </DraggableBox>
-          );
-        })}
-      </ConnectionManager>
     </div>
   );
 }
