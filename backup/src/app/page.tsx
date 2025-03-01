@@ -37,7 +37,7 @@ export default function NodeEditor() {
     const updateNodeInputsAndOutputs = (nodeId) => {
       const node = updatedNodes[nodeId];
   
-      // Update the node's output value
+      // Update the node's output value based on input values
       updatedNodes[nodeId].outputValues = calculateNodeOutput(node);
   
       // Propagate this node's output to connected nodes
@@ -46,10 +46,17 @@ export default function NodeEditor() {
           const { end } = connection;
           const outputValue = updatedNodes[nodeId].outputValues[connection.start.id];
           
-          if (outputValue !== undefined) {
+          // If outputValue is undefined or invalid, reset the input value and output value
+          if (outputValue === undefined || outputValue === null) {
+            updatedNodes[end.nodeId].inputValues[end.id] = undefined;
+            updatedNodes[end.nodeId].outputValues = []; // Clear the output value if input is invalid
+          } else {
             updatedNodes[end.nodeId].inputValues[end.id] = outputValue;
-            updateNodeInputsAndOutputs(end.nodeId); // Recursively update dependent nodes
+            updatedNodes[end.nodeId].outputValues = calculateNodeOutput(updatedNodes[end.nodeId]); // Recalculate output based on new inputs
           }
+  
+          // Recursively update dependent nodes
+          updateNodeInputsAndOutputs(end.nodeId);
         }
       });
     };
@@ -62,7 +69,6 @@ export default function NodeEditor() {
     setNodes(updatedNodes);
   };
   
-
   useEffect(() => {
     const updatedNodes = updateAllNodeOutputs({ ...nodes });
     setNodes(updatedNodes);
