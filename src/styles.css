@@ -12,20 +12,9 @@ body,
   margin: 0;
 }
 
-/* .react-flow__node {
-  box-shadow: 0px 0.51px 1.01px 0px rgba(255, 255, 255, 0.2);
+.react-flow__node {
   border-radius: 0.5rem;
-  background-color: #2C2525;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 1rem;
-  font-size: 1rem;
-  flex-direction: column;
-  border: 1px solid #2C2525;
-  color: #2C2525;
-} */
+}
 
 .react-flow__controls {
   background: transparent;

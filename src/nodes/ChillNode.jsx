@@ -52,28 +52,29 @@ export function ChillNode({data, id}) {
 
   return (
 <div
-  className="react-flow__node"
   style={{
-    height: `${nodeHeight}px`,
+    // height: `${nodeHeight}px`,
     // minWidth: "150px",
     // padding: "10px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    objectFit: "contain",
   }}
 >
   {safeData.header && <div>{safeData.header}</div>}
 
-  <div>
+  <div style={{display: "flex", flexDirection: "column", justifyContent: "space-around", alignItems: "center"}}>
   {/* Left (input) Handles */}
   {Array.from({ length: leftCount }).map((_, i) => (
-    <div key={`left-wrapper-${i}`} style={{ display: "flex", alignItems: "center" }}>
+    <div key={`left-wrapper-${i}`} style={{position: "relative", alignItems: "center" }}>
       <Handle
         key={`left-${i}`}
         type="target"
         position={Position.Left}
         id={`left-${i}`}
         // style={{ top: 40 + i * 20 }}
+        style={{position: "absolute"}}
       />
       <div>{safeData.inputs[i]}</div>
     </div>
