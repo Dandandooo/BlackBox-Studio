@@ -25,7 +25,7 @@ export default function NodeEditor() {
   const [error, setError] = useState('');
 
   const calculateNodeOutput = (node) => {
-    if (node.nodeFunction && node.inputValues.length === node.inputs && node.inputValues.every(val => val !== undefined)) {
+    if (node.nodeFunction && node.inputValues.length === node.inputs && node.inputValues.every(val => val !== undefined && val !== null)) {
       const result = node.nodeFunction(...node.inputValues);
       return Array.isArray(result) ? result : [result];
     }
@@ -41,35 +41,48 @@ export default function NodeEditor() {
 
   const handleConnectionsUpdate = (updatedConnections) => {
     const updatedNodes = { ...nodes };
-    const updateNodeInputsAndOutputs = (nodeId) => {
+
+    // Function to update a single node's inputs and outputs
+    const updateNode = (nodeId) => {
       const node = updatedNodes[nodeId];
-      updatedNodes[nodeId].outputValues = calculateNodeOutput(node);
+      if (!node) return; // Node might have been deleted
 
-      updatedConnections.forEach((connection) => {
-        if (connection.start.nodeId === nodeId) {
-          const { end } = connection;
-          const outputValue = updatedNodes[nodeId].outputValues[connection.start.id];
-
-          if (outputValue === undefined || outputValue === null) {
-            updatedNodes[end.nodeId].inputValues[end.id] = undefined;
-            updatedNodes[end.nodeId].outputValues = [];
-          } else {
-            updatedNodes[end.nodeId].inputValues[end.id] = outputValue;
-            updatedNodes[end.nodeId].outputValues = calculateNodeOutput(updatedNodes[end.nodeId]);
+      // Collect input values based on connections
+      const newInputs = Array(node.inputs).fill(undefined); // Initialize with undefined
+      updatedConnections.forEach(connection => {
+        if (connection.end.nodeId === nodeId) {
+          const startNode = updatedNodes[connection.start.nodeId];
+          if (startNode) {
+            newInputs[connection.end.id] = startNode.outputValues[connection.start.id];
           }
-
-          updateNodeInputsAndOutputs(end.nodeId);
         }
       });
+      node.inputValues = newInputs;
+
+      // Only calculate output if all inputs are valid
+      if (node.inputValues.length === node.inputs && node.inputValues.every(val => val !== undefined && val !== null)) {
+        node.outputValues = calculateNodeOutput(node);
+      } else {
+        node.outputValues = []; // Reset outputs if not all inputs are valid
+      }
     };
 
-    updatedConnections.forEach((connection) => {
-      updateNodeInputsAndOutputs(connection.start.nodeId);
+    // Update all nodes involved in the connections
+    const affectedNodes = new Set();
+    updatedConnections.forEach(connection => {
+      affectedNodes.add(connection.start.nodeId);
+      affectedNodes.add(connection.end.nodeId);
+    });
+
+    // Convert the Set to an Array and process each node
+    Array.from(affectedNodes).forEach(nodeId => {
+      updateNode(nodeId);
     });
 
     setNodes(updatedNodes);
   };
 
+  
   const countFunctionArgs = (funcStr) => {
     const match = funcStr.match(/\(([^)]*)\)/);
     if (match && match[1]) {
