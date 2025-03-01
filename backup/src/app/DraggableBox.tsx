@@ -15,7 +15,8 @@ export default function DraggableBox({
   getConnectionStatus,
   inputValues = [],
   outputValues = [],
-  nodeFunction
+  nodeFunction,
+  toggleMinecraftClass
 }) {
   const nodeRef = useRef(null);
   const [position, setPosition] = useState(defaultPosition);
@@ -56,10 +57,10 @@ export default function DraggableBox({
       <div
         ref={nodeRef}
         data-node-id={nodeId}
-        className={`draggable-box ${className}`}
+        className={`draggable-box ${toggleMinecraftClass ? 'minecraft' : ''} ${className}`}
       >
         {/* Header Section with Text */}
-        <div className="drag-handle">
+        <div className={`drag-handle ${toggleMinecraftClass ? 'header' : ''}`}>
           <h3 className="drag-handle-title">{nodeId}</h3>
         </div>
 

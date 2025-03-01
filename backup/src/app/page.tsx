@@ -76,6 +76,13 @@ export default function NodeEditor() {
   });
   const [error, setError] = useState("");
 
+  const [applyMinecraftStyle, setApplyMinecraftStyle] = useState(false); // State for toggling Minecraft style
+
+  // -- Toggle the Minecraft style
+  const toggleMinecraftStyle = () => {
+    setApplyMinecraftStyle(!applyMinecraftStyle);
+  };
+
   // -- Logic to compute node output
   const calculateNodeOutput = (node) => {
     if (
@@ -250,8 +257,10 @@ export default function NodeEditor() {
         width: "100vw",
         height: "100vh",
         // Dark overlay + repeating dirt.jpg (or your image):
-        backgroundImage:
-          'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("/dirt.jpg")',
+        backgroundImage: applyMinecraftStyle
+        ? 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("/dirt.jpg")'
+        : 'none',
+        backgroundColor: applyMinecraftStyle ? 'transparent' : '#333', 
         backgroundBlendMode: "multiply",
         backgroundRepeat: "repeat",
         // Adjust tile size to your preference:
@@ -279,6 +288,7 @@ export default function NodeEditor() {
                 inputValues={node.inputValues}
                 outputValues={node.outputValues}
                 nodeFunction={node.nodeFunction}
+                className={applyMinecraftStyle ? "minecraft" : ""}
               >
                 {node.id}
               </DraggableBox>
@@ -289,6 +299,13 @@ export default function NodeEditor() {
 
       {/* Floating form to add a new node, pinned top-left */}
       <div className="absolute top-8 left-8 bg-gray-700 p-4 rounded-md w-[200px]">
+      <button onClick={toggleMinecraftStyle} className="mt-4">
+        <img
+          src={applyMinecraftStyle ? "/lever_off.png" : "/lever_on.png"}
+          alt="Minecraft Lever"
+          className="w-30 h-30 transition-transform duration-200"
+        />
+      </button>
         <h2 className="text-white text-lg mb-4">Add Node</h2>
         <form onSubmit={handleAddNode}>
           <div className="mb-2">
