@@ -99,47 +99,52 @@ export default function NodeEditor() {
 
   // -- Called when connections change
   const handleConnectionsUpdate = (updatedConnections) => {
-    const updatedNodes = { ...nodes };
-
-    // Update a single node's inputs + outputs based on connections
-    const updateNode = (nodeId) => {
-      const node = updatedNodes[nodeId];
-      if (!node) return;
-
-      // Rebuild input array from connections that end at this node
-      const newInputs = Array(node.inputs).fill(undefined);
-      updatedConnections.forEach((conn) => {
-        if (conn.end.nodeId === nodeId) {
-          const startNode = updatedNodes[conn.start.nodeId];
-          if (startNode) {
-            newInputs[conn.end.id] = startNode.outputValues[conn.start.id];
+    // Using a functional update form to ensure we work with the latest state
+    setNodes((prevNodes) => {
+      const updatedNodes = { ...prevNodes };
+    
+      // Update a single node's inputs + outputs based on connections
+      const updateNode = (nodeId) => {
+        const node = updatedNodes[nodeId];
+        if (!node) return;
+    
+        // Rebuild input array from connections that end at this node
+        const newInputs = Array(node.inputs).fill(undefined);
+        updatedConnections.forEach((conn) => {
+          if (conn.end.nodeId === nodeId) {
+            const startNode = updatedNodes[conn.start.nodeId];
+            if (startNode) {
+              newInputs[conn.end.id] = startNode.outputValues[conn.start.id];
+            }
           }
+        });
+        node.inputValues = newInputs;
+    
+        // If all inputs are valid, compute outputs; otherwise clear
+        if (
+          node.inputValues.length === node.inputs &&
+          node.inputValues.every((val) => val !== undefined && val !== null)
+        ) {
+          node.outputValues = calculateNodeOutput(node);
+        } else {
+          node.outputValues = [];
         }
+      };
+    
+      // Identify all affected nodes and update them
+      const affectedNodes = new Set();
+      updatedConnections.forEach((conn) => {
+        affectedNodes.add(conn.start.nodeId);
+        affectedNodes.add(conn.end.nodeId);
       });
-      node.inputValues = newInputs;
-
-      // If all inputs are valid, compute outputs; otherwise clear
-      if (
-        node.inputValues.length === node.inputs &&
-        node.inputValues.every((val) => val !== undefined && val !== null)
-      ) {
-        node.outputValues = calculateNodeOutput(node);
-      } else {
-        node.outputValues = [];
-      }
-    };
-
-    // Identify all affected nodes and update them
-    const affectedNodes = new Set();
-    updatedConnections.forEach((conn) => {
-      affectedNodes.add(conn.start.nodeId);
-      affectedNodes.add(conn.end.nodeId);
+    
+      // Update only the affected nodes
+      affectedNodes.forEach((nodeId) => {
+        updateNode(nodeId);
+      });
+    
+      return updatedNodes;  // Return updated nodes state
     });
-    Array.from(affectedNodes).forEach((nodeId) => {
-      updateNode(nodeId);
-    });
-
-    setNodes(updatedNodes);
   };
 
   // -- Re-run output calculations whenever connections change
