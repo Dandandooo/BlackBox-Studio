@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import DraggableBox from "./DraggableBox";
 import ConnectionManager from "./ConnectionManager";
 
+
 export default function NodeEditor() {
   // -- Node definitions from "updated upstream"
   const [nodes, setNodes] = useState({
@@ -79,7 +80,12 @@ export default function NodeEditor() {
   const [applyMinecraftStyle, setApplyMinecraftStyle] = useState(false); // State for toggling Minecraft style
 
   // -- Toggle the Minecraft style
+  // var leverSound = new Audio("/levelup.mp3");
+  var leverOn = new Audio("https://storage.googleapis.com/soundboards/Games/MINECRAFT/MP3/LEVELUP%20-%20AUDIO%20FROM%20JAYUZUMI.COM.mp3");
+  var leverOff = new Audio("https://storage.googleapis.com/soundboards/Games/MINECRAFT/MP3/NO4%20-%20AUDIO%20FROM%20JAYUZUMI.COM.mp3")
   const toggleMinecraftStyle = () => {
+    if (!applyMinecraftStyle) leverOn.play();
+    else leverOff.play();
     setApplyMinecraftStyle(!applyMinecraftStyle);
   };
 
@@ -109,12 +115,12 @@ export default function NodeEditor() {
     // Using a functional update form to ensure we work with the latest state
     setNodes((prevNodes) => {
       const updatedNodes = { ...prevNodes };
-    
+
       // Update a single node's inputs + outputs based on connections
       const updateNode = (nodeId) => {
         const node = updatedNodes[nodeId];
         if (!node) return;
-    
+
         // Rebuild input array from connections that end at this node
         const newInputs = Array(node.inputs).fill(undefined);
         updatedConnections.forEach((conn) => {
@@ -126,7 +132,7 @@ export default function NodeEditor() {
           }
         });
         node.inputValues = newInputs;
-    
+
         // If all inputs are valid, compute outputs; otherwise clear
         if (
           node.inputValues.length === node.inputs &&
@@ -137,19 +143,19 @@ export default function NodeEditor() {
           node.outputValues = [];
         }
       };
-    
+
       // Identify all affected nodes and update them
       const affectedNodes = new Set();
       updatedConnections.forEach((conn) => {
         affectedNodes.add(conn.start.nodeId);
         affectedNodes.add(conn.end.nodeId);
       });
-    
+
       // Update only the affected nodes
       affectedNodes.forEach((nodeId) => {
         updateNode(nodeId);
       });
-    
+
       return updatedNodes;  // Return updated nodes state
     });
   };
@@ -249,6 +255,8 @@ export default function NodeEditor() {
   const canvasWidth = 5000;
   const canvasHeight = 5000;
 
+  // lever sound
+
   // -- Render
   return (
     <div
@@ -260,7 +268,7 @@ export default function NodeEditor() {
         backgroundImage: applyMinecraftStyle
         ? 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("/dirt.jpg")'
         : 'none',
-        backgroundColor: applyMinecraftStyle ? 'transparent' : '#333', 
+        backgroundColor: applyMinecraftStyle ? 'transparent' : '#333',
         backgroundBlendMode: "multiply",
         backgroundRepeat: "repeat",
         // Adjust tile size to your preference:
@@ -315,6 +323,7 @@ export default function NodeEditor() {
               className="p-2 mt-1 w-full"
               value={newNode.id}
               onChange={(e) => setNewNode({ ...newNode, id: e.target.value })}
+              // onClick={() => leverSound.play()}
               placeholder="Node ID"
             />
           </div>
