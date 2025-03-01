@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "dev": "concurrently \"next dev\" \"npm run electron\",
+    "electron": "wait-on http://localhost:3000 && electron electron/main.js",
+    "build": "next build && electron-builder"
+  },
+  "dependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^23.0.0",
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "concurrently": "^8.0.0",
+    "wait-on": "^7.0.0"
+  }
+}
