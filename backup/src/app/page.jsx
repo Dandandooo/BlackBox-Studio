@@ -938,7 +938,7 @@ function NodeEditor() {
               <img
                 src={applyMinecraftStyle ? "/lever_off.png" : "/lever_on.png"}
                 alt="Minecraft Lever"
-                style={{scale:4, translate: "-1.55px"}}
+                style={{scale:4, translate: "-1px"}}
               />
             </ControlButton>
         </Controls>
