@@ -140,6 +140,7 @@ function NodeEditor() {
   const leverOnRef = useRef(null);
   const leverOffRef = useRef(null);
   const anvilUseRef = useRef(null);
+  const chestOpenRef = useRef(null);
 
 
   // Initialize audio on component mount
@@ -147,6 +148,8 @@ function NodeEditor() {
     leverOnRef.current = new Audio("https://storage.googleapis.com/soundboards/Games/MINECRAFT/MP3/LEVELUP%20-%20AUDIO%20FROM%20JAYUZUMI.COM.mp3");
     leverOffRef.current = new Audio("https://storage.googleapis.com/soundboards/Games/MINECRAFT/MP3/NO4%20-%20AUDIO%20FROM%20JAYUZUMI.COM.mp3");
     anvilUseRef.current = new Audio("/anvil_use.wav");
+    chestOpenRef.current = new Audio("/chestopen.wav");
+    
 
   }, []);
 
@@ -734,6 +737,9 @@ function NodeEditor() {
   const openFileBrowser = () => {
     // Only open file browser if no file is selected or after file is removed
     if (!newNode.file) {
+      if (applyMinecraftStyle) {
+        chestOpenRef.current?.play();
+      }
       fileInputRef.current.click();
     }
   };
