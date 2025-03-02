@@ -59,7 +59,7 @@ cyan: "#85dacc",
   left: 0;
   right: 0;
   height: 2rem; /* h-8 */
-  background-color: rgba(128, 128, 128, 0.5); /* Semi-transparent background */
+  background-color: #2C252570; /* Semi-transparent background */
   border-radius: 1rem 1rem 0 0; /* This is commented out already */
   display: flex;
   justify-content: space-between;
@@ -134,7 +134,8 @@ cyan: "#85dacc",
   background-color: #f38d70;
   color: white;
 
-  margin: .1rem;
+  margin: .5rem;
+  scale: 1.5;
 }
 
 .react-flow__controls-button:hover {
