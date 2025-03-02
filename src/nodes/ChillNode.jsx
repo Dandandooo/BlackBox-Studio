@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Handle, Position, useUpdateNodeInternals, useReactFlow } from "@xyflow/react";
+import styled from "styled-components";
+
+const text = styled.div`
+  font-family: Zapfino;
+  font-size: .5rem;
+`
 
 export function ChillNode({data, id}) {
 
@@ -53,7 +59,8 @@ export function ChillNode({data, id}) {
     // minHeight: "24px",
     // padding: "10px",
     display: "block",
-    paddingInline: "10px",
+    paddingInline: "30px",
+    overflow: "hidden",
     // flexDirection: "column",
     // alignItems: "center",
     // objectFit: "contain",
@@ -68,37 +75,39 @@ export function ChillNode({data, id}) {
   {/* Left (input) Handles */}
   <div style={{display: "flex", flexDirection: "column", position: "fixed", left: "0", justifyContent: "space-evenly", height: "80%", bottom: "0"}}>
     {Array.from({ length: leftCount }).map((_, i) => (
-      // <div key={`left-wrapper-${i}`} style={{position: "relative", alignItems: "center" }}>
+      <div style={{display: "inline-block"}}>
         <Handle
           key={`left-${i}`}
           type="target"
           position={Position.Left}
           id={`left-${i}`}
-          style={{ top: 20 + i * 20 }}
+          style={{ top: (i + 1) * (60/(leftCount+1)) }}
           // style={{position: "relative"}}
         />
-        // {/* <div>{safeData.inputs[i]}</div> */}
-      // </div>
+        <text>{safeData.inputs[i]}</text>
+      </div>
     ))}
   </div>
-  <input
+  {/* <input
         type="text"
         value={exec}
         onChange={handleExecChange}
         style={{ marginBottom: "10px", width: "100px", textAlign: "center" }}
-      />
+      /> */}
 
   <div style={{display: "flex", flexDirection: "column", position: "absolute", right: "0", justifyContent: "space-evenly", height: "80%", bottom: "0"}}>
     {/* Right (output) Handles */}
     {Array.from({ length: rightCount }).map((_, i) => (
+      <div>
+        <text>{safeData.inputs[i]}</text>
         <Handle
           key={`right-${i}`}
           type="source"
           position={Position.Right}
           id={`right-${i}`}
-          style={{ top: 20 + i * 20 }}
-          // style={{position: "relative", marginBottom: "10px"}}
+          style={{ top: (i + 1) * (60/(rightCount+1)) }}
         />
+      </div>
     ))}
   </div>
   </div>
