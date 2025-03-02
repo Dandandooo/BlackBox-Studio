@@ -13,6 +13,21 @@ cyan: "#85dacc",
   src: url('/Monocraft.ttc') format('truetype');
 }
 
+@font-face {
+  font-family: 'Scientifica';
+  src: url('/scientifica.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Inconsolata';
+  src: url('/Inconsolata-VariableFont_wdth,wght.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Jetbrains Mono';
+  src: url('/JetBrainsMono-Regular.ttf') format('truetype');
+}
+
 .minecraft-text {
   font-family: Monocraft !important;
   /* font-size: 10px; */
@@ -20,7 +35,7 @@ cyan: "#85dacc",
 }
 
 .draggable-box {
-  font-family: 'CaskaydiaCove Nerd Font', monospace;
+  font-family: "Jetbrains Mono";
   position: relative;
   /* background-color: #6ab0f3; */
   background-color: #3b80e7;
@@ -59,9 +74,6 @@ cyan: "#85dacc",
 }
 
 .react-flow__node.selected {
-  /* margin-left: -2px; */
-  /* margin-top: -2px; */
-  /* border: 2px solid #f1cd7a !important; */
   --draggable-box-border-color: #f1cd7a;
   --draggable-box-mc-border-color: green;
 }
@@ -72,6 +84,7 @@ cyan: "#85dacc",
 }
 
 .drag-handle {
+  font-family: 'Scientifica';
   font-weight: 800;
   color: white;
   /* color: #252525; */
@@ -362,4 +375,8 @@ cyan: "#85dacc",
 
 .remove-button:hover {
   background-color: #d65d70;
+}
+
+.dndnode:hover {
+  filter: brightness(0.8);
 }
