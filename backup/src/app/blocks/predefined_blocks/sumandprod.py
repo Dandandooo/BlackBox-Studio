@@ -1,4 +1,5 @@
 import sys
+
 import json
 
 def calculate_sum_and_product(inputs):

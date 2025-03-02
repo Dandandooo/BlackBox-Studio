@@ -106,8 +106,7 @@ impl Graph {
             self.nodes.len() - 1
         };
 
-
-        let mut new_node = Node {
+        let new_node = Node {
             id,
             name,
             inputs,

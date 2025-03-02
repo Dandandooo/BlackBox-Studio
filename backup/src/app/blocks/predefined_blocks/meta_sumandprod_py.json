@@ -1,7 +1,8 @@
 {
     "name": "sumandprod_py",
     "language": "python",
-    "run": "python ./sumandprod.py",
+    "location" : "/home/roshan/repos/hackillinois/backup/src/app/blocks/predefined_blocks/meta_sumandprod_py.json",
+    "run": "echo test",
     "inputs" : [
         {"x": "float"},
         {"y": "float"}

@@ -2,7 +2,7 @@
   "name": "hello",
   "location": "../outputstring/meta.json",
   "language": "python",
-  "run": "python3 ../outputstring/string.py",
+  "run": "echo [\"test\"]",
   "inputs": [],
   "outputs": [
     {"out1": "string"}
