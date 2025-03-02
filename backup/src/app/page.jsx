@@ -660,7 +660,16 @@ function NodeEditor() {
         <MiniMap
           nodeColor={(node) => {
             if (applyMinecraftStyle) {
-              return node.data.inputs === 0 ? 'red' : '#8B5A2B'; // red for redblock nodes, brown for others
+              if (node.data.outputs === 0) {
+                const fullyConnected =
+                node.data.inputs > 0 &&
+                node.data.inputValues.length === node.data.inputs &&
+                node.data.inputValues.every(val => val !== undefined && !Number.isNaN(val));
+              
+                return fullyConnected ? '#FFD700' : '#7d5516'; // Yellow if connected, gray if not
+              }
+              if (node.data.inputs === 0) return 'red'; // Source node (redblock)
+              return '#b09056'; // Normal block color
             }
             return '#fff'; // default color when not in Minecraft mode
           }}
