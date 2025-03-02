@@ -699,19 +699,19 @@ function NodeEditor() {
             minecraftStyle: applyMinecraftStyle,
           },
         },
-        "floor" : {
+        "rand" : {
           id: getId(),
           type: 'customNode',
           position,
           data: {
-            label: 'Floor',
-            inputs: 2,
+            label: 'Random',
+            inputs: 0,
             outputs: 1,
             inputValues: [],
-            inputTypes: ['Number', 'Number'],
+            inputTypes: [],
             outputValues: [],
             outputTypes: ['Number'],
-            nodeFunction: (a, b) => Math.floor(a / b),
+            nodeFunction: () => Math.random(),
             minecraftStyle: applyMinecraftStyle,
           },
         },
@@ -883,7 +883,7 @@ function NodeEditor() {
 
         // Attach the evaluated function to the node
         json.data.nodeFunction = eval(json.data.nodeFunction);
-        
+
         const nodeSpacingX = 200; // Horizontal spacing
         const nodeSpacingY = 100; // Vertical spacing
 

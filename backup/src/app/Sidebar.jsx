@@ -2,6 +2,8 @@ import React from 'react';
 import { useDnD } from './DnDContext';
 import { TbMathXPlusY, TbMathXMinusY, TbMathXy, TbMathXDivideY, TbMathXFloorDivideY, TbXPowerY, TbMathSin, TbMathCos } from 'react-icons/tb';
 import { IoEnterOutline } from "react-icons/io5";
+import { GiPerspectiveDiceSixFacesRandom } from "react-icons/gi";
+
 
 export default () => {
   const [_, setType] = useDnD();
@@ -52,21 +54,21 @@ export default () => {
         </div>
         <div
           className="dndnode w-16 h-16 border-2 border-gray-600 rounded-lg flex items-center justify-center text-lg font-bold cursor-pointer shadow-md text-gray-600"
-          onDragStart={(event) => onDragStart(event, 'floor')}
+          onDragStart={(event) => onDragStart(event, 'pow')}
           draggable
           style={{ background: '#6ab0f3', color: 'black', fontSize: '2rem' }}
         >
+          <TbXPowerY/>
           {/* // */}
-          <TbMathXFloorDivideY/>
         </div>
         <div
           className="dndnode w-16 h-16 border-2 border-gray-600 rounded-lg flex items-center justify-center text-lg font-bold cursor-pointer shadow-md text-gray-600"
-          onDragStart={(event) => onDragStart(event, 'pow')}
+          onDragStart={(event) => onDragStart(event, 'rand')}
           draggable
           style={{ background: '#85dacc', color: 'black', fontSize: '2rem' }}
         >
           {/* x^y */}
-          <TbXPowerY/>
+          <GiPerspectiveDiceSixFacesRandom/>
         </div>
         <div
           className="dndnode w-16 h-16 border-2 border-gray-600 rounded-lg flex items-center justify-center text-gray-600 text-lg font-bold cursor-pointer shadow-md"
