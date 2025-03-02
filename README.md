@@ -1,5 +1,10 @@
 # BlackBox Studio
-
+<p>
+    <img src="https://img.shields.io/badge/Contributors-4-purple?logo=github" alt="Four Contributors" > 
+    <img src="https://img.shields.io/badge/Minecraft References-∞-green?logo=mojang studios" alt="Infinite Minecraft References"> 
+    <img src="https://img.shields.io/badge/Frontend-React-blue?logo=react" alt="React Frontend">
+    <img src="https://img.shields.io/badge/Backend-Actix-orange?logo=rust" alt="Actix Backend">
+</p>
 ## How to Run for yourself
 
 1. `cd backup`
