@@ -116,12 +116,12 @@ impl Graph {
             behavior
         };
 
-        if new_node.inputs.is_empty() {
+        self.nodes[id] = Some(new_node);
+
+        if self.nodes[id].as_ref().unwrap().inputs.is_empty() {
             self.propogate(id)?;
-            print!("salskdfjalksdjf");
         }
 
-        self.nodes[id] = Some(new_node);
         Ok(id)
     }
 
@@ -206,6 +206,7 @@ impl Graph {
             let node = &self.nodes[front].as_ref().unwrap();
 
             if node.inputs.len() == 0 {
+                print!("going fo call func call");
                 let fun_call = (node.behavior)(&vec![]);
                 print!("{:?}", fun_call);
 
