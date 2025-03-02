@@ -11,19 +11,29 @@ import {
   useNodesState,
   useEdgesState,
   Panel,
+  ReactFlowProvider,
+  useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import './DraggableBox.css'; // We'll keep some of your styling
 
 // Custom node component
 import CustomNode from './CustomNode';
+import { DnDProvider, useDnD } from './DnDContext';
+
+import Sidebar from './Sidebar';
+
+let id = 0;
+const getId = () => `dndnode_${id++}`;
 
 // Register custom node types
 const nodeTypes = {
   customNode: CustomNode,
 };
 
-export default function NodeEditor() {
+function NodeEditor() {
+  const { screenToFlowPosition } = useReactFlow();
+  const [type] = useDnD();
   // Initial nodes based on your existing nodes object
   const initialNodes = [
     {
@@ -526,6 +536,93 @@ export default function NodeEditor() {
     setNeedsUpdate(true);
   };
 
+  const onDragOver = useCallback((event) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }, []);
+ 
+  const onDrop = useCallback(
+    (event) => {
+      event.preventDefault();
+ 
+      // check if the dropped element is valid
+      if (!type) {
+        return;
+      }
+ 
+      // project was renamed to screenToFlowPosition
+      // and you don't need to subtract the reactFlowBounds.left/top anymore
+      // details: https://reactflow.dev/whats-new/2023-11-10
+      const position = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+      const nodeTypes = {
+        "add" : {
+          id: getId(),
+          type: 'customNode', // Set the type to 'customNode' (same as your 'add' node)
+          position,
+          data: {
+            label: 'Add Node', // You can customize this based on the type
+            inputs: 2, // Default inputs for the 'add' node
+            outputs: 1, // Default outputs for the 'add' node
+            inputValues: [],
+            outputValues: [],
+            nodeFunction: (a, b) => a + b, // Default function for the 'add' node
+            minecraftStyle: applyMinecraftStyle,
+          },
+        },
+        "sub" : {
+          id: getId(),
+          type: 'customNode', // Set the type to 'customNode' (same as your 'add' node)
+          position,
+          data: {
+            label: 'Sub Node', // You can customize this based on the type
+            inputs: 2, // Default inputs for the 'add' node
+            outputs: 1, // Default outputs for the 'add' node
+            inputValues: [],
+            outputValues: [],
+            nodeFunction: (a, b) => a - b, // Default function for the 'add' node
+            minecraftStyle: applyMinecraftStyle,
+          },
+        }, 
+        "mult" : {
+          id: getId(),
+          type: 'customNode', // Set the type to 'customNode' (same as your 'add' node)
+          position,
+          data: {
+            label: 'Mult Node', // You can customize this based on the type
+            inputs: 2, // Default inputs for the 'add' node
+            outputs: 1, // Default outputs for the 'add' node
+            inputValues: [],
+            outputValues: [],
+            nodeFunction: (a, b) => a * b, // Default function for the 'add' node
+            minecraftStyle: applyMinecraftStyle,
+          },
+        }, 
+        "div" : {
+          id: getId(),
+          type: 'customNode', // Set the type to 'customNode' (same as your 'add' node)
+          position,
+          data: {
+            label: 'Div Node', // You can customize this based on the type
+            inputs: 2, // Default inputs for the 'add' node
+            outputs: 1, // Default outputs for the 'add' node
+            inputValues: [],
+            outputValues: [],
+            nodeFunction: (a, b) => a / b, // Default function for the 'add' node
+            minecraftStyle: applyMinecraftStyle,
+          },
+        }
+      };
+
+      const newNode = nodeTypes[type]
+
+      setNodes((nds) => nds.concat(newNode));
+    },
+    [screenToFlowPosition, type],
+  );
+
   return (
     <div
       style={{
@@ -548,6 +645,8 @@ export default function NodeEditor() {
         onConnect={onConnect}
         nodeTypes={nodeTypes}
         panOnScroll={true}
+        onDrop={onDrop}
+        onDragOver={onDragOver}
         fitView
       >
         <Controls>
@@ -620,7 +719,18 @@ export default function NodeEditor() {
             {error && <p className="text-red-500 mt-2">{error}</p>}
           </div>
         </Panel>
+        <Panel position="bottom">
+          <Sidebar />
+        </Panel>
       </ReactFlow>
     </div>
   );
 }
+
+export default () => (
+  <ReactFlowProvider>
+    <DnDProvider>
+      <NodeEditor />
+    </DnDProvider>
+  </ReactFlowProvider>
+);
