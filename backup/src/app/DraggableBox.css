@@ -33,7 +33,7 @@ cyan: "#85dacc",
 }
 
 .draggable-box.minecraft {
-  background-image: url("/block.jpg");
+  background-image: url("/command_block.png");
   background-size: cover;
   background-repeat: no-repeat;
   font-family: Monocraft !important;
@@ -150,13 +150,25 @@ cyan: "#85dacc",
   fill: #6ab0f3;
 }
 
+.react-flow__attribution {
+  display: none;
+}
+
 .add-menu {
   font-family: CaskaydiaCove Nerd Font, monospace;
   background-color: #f38d70;
   border: 2px solid #a86145;
+  width: 200px;
+  padding: 0.5rem;
+  z-index: 50;
+  border-radius: 0.5rem;
 }
 
 .add-menu input {
-  background-color: #a86145;
-
+  background-color: #e17050;
+  border: 2px solid #a86145;
+  border-radius: 0.5rem;
+  padding: 3px;
+  margin-bottom: 0.5rem;
+  width: 100%;
 }

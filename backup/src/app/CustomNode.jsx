@@ -3,14 +3,16 @@ import { Handle, Position } from '@xyflow/react';
 import './DraggableBox.css';
 
 function CustomNode({ id, data }) {
-  const { 
-    inputs = 1, 
-    outputs = 1, 
-    inputValues = [], 
-    outputValues = [], 
-    nodeFunction, 
+  const {
+    inputs = 1,
+    outputs = 1,
+    inputValues = [],
+    inputTypes = [],
+    outputValues = [],
+    outputTypes = [],
+    nodeFunction,
     label,
-    minecraftStyle = false 
+    minecraftStyle = false
   } = data;
   
   const isLampNode = outputs === 0;
@@ -28,9 +30,9 @@ function CustomNode({ id, data }) {
   
   const backgroundImage =
     minecraftStyle && inputs === 0
-      ? 'url("/redblock.jpg")'
+      ? 'url("/redstone_block.png")'
       : minecraftStyle
-      ? 'url("/block.jpg")'
+      ? 'url("/command_block.png")'
       : 'none';
 
   return (
@@ -40,6 +42,7 @@ function CustomNode({ id, data }) {
         backgroundImage: nodeBackgroundImage,
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
+        imageRendering: 'pixelated'
       }}
     >
       {/* Header Section with Text */}
@@ -55,32 +58,32 @@ function CustomNode({ id, data }) {
           const hasValue = inputValues[i] !== undefined;
           const isNaN = hasValue && Number.isNaN(inputValues[i]);
           const isConnected = hasValue;
-          
+
           return (
-            <div 
-              key={`input-${i}`} 
-              style={{ 
-                position: 'relative', 
-                height: `${100 / Math.max(inputs, 1)}%`, 
-                width: '20px' 
+            <div
+              key={`input-${i}`}
+              style={{
+                position: 'relative',
+                height: `${100 / Math.max(inputs, 1)}%`,
+                width: '20px'
               }}
             >
               <Handle
                 type="target"
                 position={Position.Left}
                 id={`input-${i}`}
-                style={{ 
-                  width: '10px', 
-                  height: '10px', 
+                style={{
+                  width: '10px',
+                  height: '10px',
                   background: isNaN ? 'red' : (isConnected ? 'green' : 'white')
                 }}
               />
               {hasValue && !isNaN && (
-                <span 
+                <span
                   className={`value-label ${minecraftStyle ? 'minecraft-text' : ''}`}
-                  style={{ 
-                    position: 'absolute', 
-                    left: '4px', 
+                  style={{
+                    position: 'absolute',
+                    left: '4px',
                     top: '50%',
                     transform: 'translateY(-50%)',
                     backgroundColor: 'rgba(0, 128, 0, 1)',
@@ -101,12 +104,12 @@ function CustomNode({ id, data }) {
         {Array.from({ length: outputs }).map((_, i) => {
           const hasValue = outputValues[i] !== undefined;
           const isNaN = hasValue && Number.isNaN(outputValues[i]);
-          
+
           return (
-            <div 
-              key={`output-${i}`} 
-              style={{ 
-                position: 'relative', 
+            <div
+              key={`output-${i}`}
+              style={{
+                position: 'relative',
                 height: `${100 / Math.max(outputs, 1)}%`,
                 width: '20px'
               }}
@@ -115,18 +118,18 @@ function CustomNode({ id, data }) {
                 type="source"
                 position={Position.Right}
                 id={`output-${i}`}
-                style={{ 
-                  width: '10px', 
-                  height: '10px', 
+                style={{
+                  width: '10px',
+                  height: '10px',
                   background: hasValue && !isNaN ? 'green' : 'red'
                 }}
               />
               {hasValue && !isNaN && (
-                <span 
+                <span
                   className={`value-label ${minecraftStyle ? 'minecraft-text' : ''}`}
-                  style={{ 
-                    position: 'absolute', 
-                    right: '4px', 
+                  style={{
+                    position: 'absolute',
+                    right: '4px',
                     top: '50%',
                     transform: 'translateY(-50%)',
                     backgroundColor: 'rgba(0, 128, 0, 1)',
@@ -135,7 +138,7 @@ function CustomNode({ id, data }) {
                   }}
                 >
                   {outputValues[i].toString().slice(0, 5)}
-                </span>              
+                </span>
               )}
             </div>
           );
