@@ -629,6 +629,20 @@ function NodeEditor() {
             nodeFunction: (a, b) => a / b, // Default function for the 'add' node
             minecraftStyle: applyMinecraftStyle,
           },
+        },
+        "log" : {
+          id: getId(),
+          type: 'customNode',
+          position,
+          data: {
+            label: 'Log Node',
+            inputs: 2,
+            outputs: 1,
+            inputValues: [],
+            outputValues: [],
+            nodeFunction: (a, b) => Math.log(a) / Math.log(b),
+            minecraftStyle: applyMinecraftStyle,
+          },
         }
       };
 
