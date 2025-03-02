@@ -22,7 +22,8 @@ cyan: "#85dacc",
 .draggable-box {
   font-family: 'CaskaydiaCove Nerd Font', monospace;
   position: relative;
-  background-color: #6ab0f3; /* bg-blue-500 */
+  /* background-color: #6ab0f3;  */
+  background-color: #2C7FFF;
   width: 12rem; /* w-48 */
   height: 12rem; /* h-48 */
   color: white;
@@ -36,11 +37,17 @@ cyan: "#85dacc",
   background-image: url("/command_block.png");
   background-size: cover;
   background-repeat: no-repeat;
+  border-radius: 0;
   font-family: Monocraft !important;
 }
 
+/* Add this rule to ensure no border radius on the drag handle in Minecraft mode */
+.draggable-box.minecraft .drag-handle {
+  border-radius: 0;
+}
+
 .drag-handle.header {
-  opacity: 0.5 !important;
+  /* Remove opacity that was making text transparent */
   font-weight: 800;
 }
 
@@ -52,8 +59,8 @@ cyan: "#85dacc",
   left: 0;
   right: 0;
   height: 2rem; /* h-8 */
-  background-color: rgba(128, 128, 128, 0.5); /* bg-blue-600 */
-  border-radius: 1rem 1rem 0 0; /* rounded-t-xl */
+  background-color: rgba(128, 128, 128, 0.5); /* Semi-transparent background */
+  border-radius: 1rem 1rem 0 0; /* This is commented out already */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -64,6 +71,8 @@ cyan: "#85dacc",
 .drag-handle-title {
   color: white;
   font-size: 0.875rem; /* text-sm */
+  /* Make sure text is fully opaque */
+  opacity: 1;
 }
 
 .node-content {
@@ -89,6 +98,7 @@ cyan: "#85dacc",
   pointer-events: none; /* Make text non-clickable */
   background-color: white;
   border-radius: 0.25rem;
+  overflow: ellipsis;
 }
 
 /* React Flow specific styles */
@@ -164,11 +174,101 @@ cyan: "#85dacc",
   border-radius: 0.5rem;
 }
 
-.add-menu input {
+.add-menu.field {
   background-color: #e17050;
   border: 2px solid #a86145;
   border-radius: 0.5rem;
   padding: 3px;
   margin-bottom: 0.5rem;
   width: 100%;
+}
+
+.add-menu.file {
+  background-color: #e17050;
+  border: 2px solid #a86145;
+  border-radius: 0.5rem;
+  padding: 3px;
+  margin-bottom: 0.5rem;
+  width: 100%;
+}
+
+/* File drop area styles */
+.file-drop-area {
+  width: 100%;
+  min-height: 80px;
+  border: 2px dashed #a86145;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  margin-bottom: 0.5rem;
+  background-color: rgba(225, 112, 80, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.file-drop-area:hover {
+  background-color: rgba(225, 112, 80, 0.5);
+}
+
+.file-drop-area.active {
+  border-color: #6ab0f3;
+  background-color: rgba(106, 176, 243, 0.2);
+}
+
+.file-drop-text {
+  color: white;
+  font-size: 0.75rem;
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.file-name {
+  color: white;
+  font-size: 0.75rem;
+  word-break: break-all;
+  max-width: 100%;
+  margin-top: 5px;
+}
+
+/* Button container for submit and remove buttons */
+.button-container {
+  display: flex;
+  gap: 8px;
+  margin-top: 1rem;
+  justify-content: flex-start; /* Align to the left instead of center */
+  width: 100%; /* Ensure the container takes the full width */
+}
+
+.submit-button {
+  background-color: #adda78; /* Green color */
+  border: 2px solid #6a8745;
+  color: white;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.submit-button:hover {
+  background-color: #9bc56a;
+}
+
+.remove-button {
+  background-color: #eb7184;
+  border: 2px solid #a84145;
+  color: white;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: auto; /* Push to the right edge */
+}
+
+.remove-button:hover {
+  background-color: #d65d70;
 }

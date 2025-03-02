@@ -156,8 +156,11 @@ function NodeEditor() {
     inputs: 0,
     outputs: 1,
     nodeFunction: '',
+    file: null
   });
   const [error, setError] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef(null);
 
   // Track when updates are needed to prevent infinite loops
   const [needsUpdate, setNeedsUpdate] = useState(false);
@@ -560,16 +563,16 @@ function NodeEditor() {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   }, []);
- 
+
   const onDrop = useCallback(
     (event) => {
       event.preventDefault();
- 
+
       // check if the dropped element is valid
       if (!type) {
         return;
       }
- 
+
       // project was renamed to screenToFlowPosition
       // and you don't need to subtract the reactFlowBounds.left/top anymore
       // details: https://reactflow.dev/whats-new/2023-11-10
@@ -605,7 +608,7 @@ function NodeEditor() {
             nodeFunction: (a, b) => a - b, // Default function for the 'add' node
             minecraftStyle: applyMinecraftStyle,
           },
-        }, 
+        },
         "mult" : {
           id: getId(),
           type: 'customNode', // Set the type to 'customNode' (same as your 'add' node)
@@ -619,7 +622,7 @@ function NodeEditor() {
             nodeFunction: (a, b) => a * b, // Default function for the 'add' node
             minecraftStyle: applyMinecraftStyle,
           },
-        }, 
+        },
         "div" : {
           id: getId(),
           type: 'customNode', // Set the type to 'customNode' (same as your 'add' node)
@@ -633,6 +636,20 @@ function NodeEditor() {
             nodeFunction: (a, b) => a / b, // Default function for the 'add' node
             minecraftStyle: applyMinecraftStyle,
           },
+        },
+        "log" : {
+          id: getId(),
+          type: 'customNode',
+          position,
+          data: {
+            label: 'Log Node',
+            inputs: 2,
+            outputs: 1,
+            inputValues: [],
+            outputValues: [],
+            nodeFunction: (a, b) => Math.log(a) / Math.log(b),
+            minecraftStyle: applyMinecraftStyle,
+          },
         }
       };
 
@@ -642,6 +659,66 @@ function NodeEditor() {
     },
     [screenToFlowPosition, type],
   );
+
+  // File drop handlers
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileInputChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      handleFile(e.target.files[0]);
+    }
+  };
+
+  const openFileBrowser = () => {
+    // Only open file browser if no file is selected or after file is removed
+    if (!newNode.file) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFile = (file) => {
+    // Store file in state
+    setNewNode({ ...newNode, file });
+
+    // Optional: if you want to read and process the file immediately
+    // For example, read an image file and set it as a node background
+    // const reader = new FileReader();
+    // reader.onload = (e) => {
+    //   // Process file content
+    // };
+    // reader.readAsDataURL(file);
+  };
+
+  // Add a new function to handle file removal
+  const handleRemoveFile = (e) => {
+    e.preventDefault(); // Prevent form submission
+    setNewNode({ ...newNode, file: null });
+
+    // Reset the file input element itself
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   return (
     <div
@@ -685,20 +762,20 @@ function NodeEditor() {
                 node.data.inputs > 0 &&
                 node.data.inputValues.length === node.data.inputs &&
                 node.data.inputValues.every(val => val !== undefined && !Number.isNaN(val));
-              
+
                 return fullyConnected ? '#FFD700' : '#7d5516'; // Yellow if connected, gray if not
               }
               if (node.data.inputs === 0) return 'red'; // Source node (redblock)
               return '#b09056'; // Normal block color
             }
-            return '#fff'; // default color when not in Minecraft mode
+            return '#6ab0f3'; // use the same blue color as the nodes in regular mode
           }}
           style={{
             backgroundImage: applyMinecraftStyle ? 'url(/white_glass.png)' : 'none',
             backgroundSize: '50px 50px',
             backgroundRepeat: 'repeat',
             borderRadius: '4px',
-            border: applyMinecraftStyle ? '2px solid #000' : 'none',
+            // border: applyMinecraftStyle ? '2px solid #000' : 'none',
           }}
           maskColor="rgba(0, 0, 0, 0.2)"
           zoomable
@@ -716,34 +793,81 @@ function NodeEditor() {
               <input
                 type="text"
                 placeholder="Node ID"
-                className="add-menu.field"
+                className="add-menu field"
                 value={newNode.id}
                 onChange={(e) => setNewNode({ ...newNode, id: e.target.value })}
               />
               <input
                 type="number"
                 placeholder="Inputs"
-                className="add-menu.field"
+                className="add-menu field"
                 value={newNode.inputs}
                 onChange={(e) => setNewNode({ ...newNode, inputs: e.target.value })}
               />
               <input
                 type="number"
                 placeholder="Outputs"
-                className="add-menu.field"
+                className="add-menu field"
                 value={newNode.outputs}
                 onChange={(e) => setNewNode({ ...newNode, outputs: e.target.value })}
               />
               <input
                 type="text"
                 placeholder="Node Function"
-                className="add-menu.field"
+                className="add-menu field"
                 value={newNode.nodeFunction}
                 onChange={(e) => setNewNode({ ...newNode, nodeFunction: e.target.value })}
               />
-              <button type="submit" className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 center">
-                Add Node
-              </button>
+
+              {/* File drop area */}
+              <div
+                className={`file-drop-area ${isDragging ? 'active' : ''}`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={newNode.file ? null : openFileBrowser} // Only open file browser if no file is selected
+              >
+                <div className="file-drop-text">
+                  {!newNode.file ? (
+                    <>
+                      <div>Drag & drop a file here</div>
+                      <div>or click to browse</div>
+                    </>
+                  ) : (
+                    <>
+                      <div>File selected:</div>
+                      <div className="file-name">{newNode.file.name}</div>
+                    </>
+                  )}
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  style={{ display: 'none' }}
+                  onChange={handleFileInputChange}
+                />
+              </div>
+
+              {/* Button container for better layout */}
+              <div className="button-container">
+                <button
+                  type="submit"
+                  className="submit-button"
+                >
+                  Add
+                </button>
+
+                {/* Only show remove button when a file is selected */}
+                {newNode.file && (
+                  <button
+                    type="button"
+                    className="remove-button"
+                    onClick={handleRemoveFile}
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
             </form>
             {error && <p className="text-red-500 mt-2">{error}</p>}
           </div>
