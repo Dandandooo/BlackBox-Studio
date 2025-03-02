@@ -7,9 +7,9 @@ function CustomNode({ id, data }) {
     inputs = 1,
     outputs = 1,
     inputValues = [],
-    inputTypes = [],
+    inputTypes = [], // Now using inputTypes array
     outputValues = [],
-    outputTypes = [],
+    outputTypes = [], // Now using outputTypes array
     nodeFunction,
     label,
     minecraftStyle = false
@@ -47,6 +47,19 @@ function CustomNode({ id, data }) {
     return `${stringValue.substring(0, maxLength)}...`;
   };
 
+  // Helper to get color for type indicators
+  const getTypeColor = (type) => {
+    const typeColors = {
+      'Number': '#ff9800',  // Orange for numbers
+      'String': '#4caf50',  // Green for strings
+      'Bool': '#2196f3', // Blue for booleans
+      'Array': '#9c27b0',  // Purple for objects
+      'Json': '#e91e63',   // Pink for arrays
+      'FreeJson': '#607d8b',
+    };
+    return typeColors[type] || '#999999';
+  };
+
   return (
     <div
       className={`draggable-box ${minecraftStyle ? 'minecraft' : ''}`}
@@ -70,6 +83,7 @@ function CustomNode({ id, data }) {
           const hasValue = inputValues[i] !== undefined;
           const isNaN = hasValue && Number.isNaN(inputValues[i]);
           const isConnected = hasValue;
+          const inputType = inputTypes[i] || 'Any';
 
           return (
             <div
@@ -77,36 +91,30 @@ function CustomNode({ id, data }) {
               style={{
                 position: 'relative',
                 height: `${100 / Math.max(inputs, 1)}%`,
-                width: '20px'
               }}
             >
+              {!(hasValue && !isNaN) && (<span
+                className={`type-label ${minecraftStyle ? 'minecraft-text' : ''}`}
+                style={{
+                  backgroundColor: getTypeColor(inputType),
+                  left: '10px'
+                }}
+              >
+                {inputType}
+              </span>)}
               <Handle
                 type="target"
                 position={Position.Left}
                 id={`input-${i}`}
-                style={{
-                  width: '10px',
-                  height: '10px',
-                  background: isNaN ? 'red' : (isConnected ? 'green' : 'white')
-                }}
-              />
+                style={{ background: isNaN ? 'red' : (isConnected ? 'green' : 'white'), }}
+              >
+              {/* Type indicator */}
               {hasValue && !isNaN && (
-                <span
-                  className={`value-label ${minecraftStyle ? 'minecraft-text' : ''}`}
-                  style={{
-                    position: 'absolute',
-                    left: '4px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    backgroundColor: 'rgba(0, 128, 0, 1)',
-                    color: 'white',
-                    padding: '2px 4px',
-                    borderRadius: '4px'
-                  }}
-                >
-                  {truncateWithEllipsis(inputValues[i], 8)}
+                <span className={`value-label ${minecraftStyle ? 'minecraft-text' : ''}`} >
+                  {inputValues[i]}
                 </span>
               )}
+              </Handle>
             </div>
           );
         })}
@@ -115,8 +123,8 @@ function CustomNode({ id, data }) {
       {/* Outputs on right side */}
       <div style={{ position: 'absolute', top: '25%', bottom: '25%', right: 0 }}>
         {Array.from({ length: outputs }).map((_, i) => {
-          const hasValue = outputValues[i] !== undefined;
-          const isNaN = hasValue && Number.isNaN(outputValues[i]);
+          const hasValidOutputValue = outputValues[i] !== undefined && outputValues[i] !== null && !Number.isNaN(outputValues[i]);
+          const outputType = outputTypes[i] || 'Any';
 
           return (
             <div
@@ -124,36 +132,30 @@ function CustomNode({ id, data }) {
               style={{
                 position: 'relative',
                 height: `${100 / Math.max(outputs, 1)}%`,
-                width: '20px'
               }}
             >
+              <span
+                className={`type-label ${minecraftStyle ? 'minecraft-text' : ''}`}
+                style={{
+                  backgroundColor: getTypeColor(outputType),
+                  right: '16px',
+                }}
+              >
+                {outputType}
+              </span>
               <Handle
                 type="source"
                 position={Position.Right}
                 id={`output-${i}`}
-                style={{
-                  width: '10px',
-                  height: '10px',
-                  background: hasValue && !isNaN ? 'green' : 'red'
-                }}
-              />
-              {hasValue && !isNaN && (
-                <span
-                  className={`value-label ${minecraftStyle ? 'minecraft-text' : ''}`}
-                  style={{
-                    position: 'absolute',
-                    right: '4px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    backgroundColor: 'rgba(0, 128, 0, 1)',
-                    padding: '2px 4px',
-                    borderRadius: '4px',
-                    color: 'white'
-                  }}
-                >
-                  {truncateWithEllipsis(outputValues[i], 8)}
+                style={{ background: hasValidOutputValue ? 'green' : 'red', }}
+              >
+              {/* Type indicator */}
+              {hasValidOutputValue && (
+                <span className={`value-label ${minecraftStyle ? 'minecraft-text' : ''}`} >
+                  {outputValues[i]}
                 </span>
               )}
+              </Handle>
             </div>
           );
         })}

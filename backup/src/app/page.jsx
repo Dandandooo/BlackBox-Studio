@@ -44,7 +44,9 @@ function NodeEditor() {
         inputs: 0,
         outputs: 1,
         inputValues: [],
+        inputTypes: [],
         outputValues: [10],
+        outputTypes: ['Number'],
         nodeFunction: () => 10,
         label: 'var x'
       }
@@ -57,7 +59,9 @@ function NodeEditor() {
         inputs: 0,
         outputs: 1,
         inputValues: [],
+        inputTypes: [],
         outputValues: [30],
+        outputTypes: ['Number'],
         nodeFunction: () => 30,
         label: 'var y'
       }
@@ -70,7 +74,9 @@ function NodeEditor() {
         inputs: 2,
         outputs: 1,
         inputValues: [],
+        inputTypes: ['Number', 'Number'],
         outputValues: [],
+        outputTypes: ['Number'],
         nodeFunction: (a, b) => a + b,
         label: 'Add'
       }
@@ -83,7 +89,9 @@ function NodeEditor() {
         inputs: 2,
         outputs: 1,
         inputValues: [],
+        inputTypes: ['Number', 'Number'],
         outputValues: [],
+        outputTypes: ['Number'],
         nodeFunction: (a, b) => a * b,
         label: 'Mult'
       }
@@ -96,7 +104,9 @@ function NodeEditor() {
         inputs: 1,
         outputs: 0,
         inputValues: [],
+        inputTypes: ['Any'],
         outputValues: [],
+        outputTypes: [],
         nodeFunction: (a, b) => "",
         label: 'Out'
       }
@@ -109,7 +119,9 @@ function NodeEditor() {
         inputs: 2,
         outputs: 1,
         inputValues: [],
+        inputTypes: ['Number', 'Number'],
         outputValues: [],
+        outputTypes: ['Number'],
         nodeFunction: (a, b) => a / b,
         label: 'Div'
       }
@@ -122,7 +134,9 @@ function NodeEditor() {
         inputs: 2,
         outputs: 1,
         inputValues: [],
+        inputTypes: ['Number', 'Number'],
         outputValues: [],
+        outputTypes: ['Number'],
         nodeFunction: (a, b) => a - b,
         label: 'Sub'
       }
@@ -150,7 +164,6 @@ function NodeEditor() {
     anvilUseRef.current = new Audio("/anvil_use.wav");
     chestOpenRef.current = new Audio("/chestopen.wav");
     chestCloseRef.current = new Audio("/chestclose.wav");
-
   }, []);
 
   // Form state for adding new nodes
@@ -159,8 +172,11 @@ function NodeEditor() {
     inputs: 0,
     outputs: 1,
     nodeFunction: '',
+    inputTypes: [],
+    outputTypes: [],
     file: null
   });
+
   const [error, setError] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
@@ -186,6 +202,15 @@ function NodeEditor() {
     const sourcePortIndex = params.sourceHandle ? parseInt(params.sourceHandle.split('-')[1]) : 0;
     const targetPortIndex = params.targetHandle ? parseInt(params.targetHandle.split('-')[1]) : 0;
 
+    const sourceType = sourceNode.data.outputTypes[sourcePortIndex];
+    const targetType = targetNode.data.inputTypes[targetPortIndex];
+
+    // Allow connection only if types match or if one of them is 'Any'
+    if (sourceType !== targetType && sourceType !== 'Any' && targetType !== 'Any') {
+      console.warn(`Connection rejected: type mismatch - ${sourceType} cannot connect to ${targetType}`);
+      return;
+    }
+
     // Remove any existing connections to this target handle
     const filteredEdges = edges.filter(edge =>
       !(edge.target === params.target && edge.targetHandle === params.targetHandle)
@@ -195,7 +220,7 @@ function NodeEditor() {
     const outputValue = sourceNode.data.outputValues[sourcePortIndex];
 
     // Determine the edge color based on the output value
-    const edgeColor = isNaN(outputValue) ? 'red' : 'green';
+    const edgeColor = outputValue ? 'green' : 'red';
 
     // Add the new edge
     const newEdge = {
@@ -214,6 +239,14 @@ function NodeEditor() {
         stroke: edgeColor, // Apply the color directly to the edge
       },
     };
+
+    const edgeForBackend = {
+      ida: params.source,
+      idb: params.target,
+      porta: sourcePortIndex,
+      portb: targetPortIndex,
+    }
+    console.log(edgeForBackend)
 
     // Set the edges with the filtered list plus the new edge
     setEdges([...filteredEdges, newEdge]);
@@ -276,7 +309,10 @@ function NodeEditor() {
       ...node,
       data: {
         ...node.data,
-        inputValues: Array(node.data.inputs).fill(undefined)
+        inputValues: Array(node.data.inputs).fill(undefined),
+        // Make sure to preserve inputTypes and outputTypes
+        inputTypes: node.data.inputTypes || Array(node.data.inputs).fill('Any'),
+        outputTypes: node.data.outputTypes || Array(node.data.outputs).fill('Any')
       }
     }));
 
@@ -362,7 +398,7 @@ function NodeEditor() {
           const sourceNode = updatedNodes.find(node => node.id === edge.source);
           if (sourceNode) {
             const outputValue = sourceNode.data.outputValues[edge.data.sourcePortIndex];
-            const edgeColor = isNaN(outputValue) ? 'red' : 'green';
+            const edgeColor = outputValue ? 'green' : 'red';
             return {
               ...edge,
               data: {
@@ -539,6 +575,15 @@ function NodeEditor() {
       maxY = Math.max(...yPositionsAtMaxX, maxY) + nodeSpacingY;
     }
 
+    // Create default inputTypes and outputTypes if not provided
+    const inputTypes = newNode.inputTypes.length > 0
+      ? newNode.inputTypes
+      : Array(parseInt(newNode.inputs)).fill('Any');
+
+    const outputTypes = newNode.outputTypes.length > 0
+      ? newNode.outputTypes
+      : Array(parseInt(newNode.outputs)).fill('Any');
+
     const newNodeObj = {
       id: newNode.id,
       type: "customNode",
@@ -547,7 +592,9 @@ function NodeEditor() {
         inputs: parseInt(newNode.inputs),
         outputs: parseInt(newNode.outputs),
         inputValues: [],
+        inputTypes: inputTypes,
         outputValues: parseInt(newNode.inputs) === 0 ? [parsedFunction()] : [],
+        outputTypes: outputTypes,
         nodeFunction: parsedFunction,
         label: newNode.id,
         minecraftStyle: applyMinecraftStyle,
@@ -557,8 +604,8 @@ function NodeEditor() {
     setNodes(prev => [...prev, newNodeObj]);
     if (applyMinecraftStyle) {
       anvilUseRef.current?.play();
-    }    
-    setNewNode({ id: "", inputs: 0, outputs: 1, nodeFunction: "" });
+    }
+    setNewNode({ id: "", inputs: 0, outputs: 1, nodeFunction: "", inputTypes: [], outputTypes: [] });
     setNeedsUpdate(true);
   };
 
@@ -586,57 +633,65 @@ function NodeEditor() {
       const nodeTypes = {
         "add" : {
           id: getId(),
-          type: 'customNode', // Set the type to 'customNode' (same as your 'add' node)
+          type: 'customNode',
           position,
           data: {
-            label: 'Add', // You can customize this based on the type
-            inputs: 2, // Default inputs for the 'add' node
-            outputs: 1, // Default outputs for the 'add' node
+            label: 'Add',
+            inputs: 2,
+            outputs: 1,
             inputValues: [],
+            inputTypes: ['Number', 'Number'],
             outputValues: [],
-            nodeFunction: (a, b) => a + b, // Default function for the 'add' node
+            outputTypes: ['Number'],
+            nodeFunction: (a, b) => a + b,
             minecraftStyle: applyMinecraftStyle,
           },
         },
         "sub" : {
           id: getId(),
-          type: 'customNode', // Set the type to 'customNode' (same as your 'add' node)
+          type: 'customNode',
           position,
           data: {
-            label: 'Sub', // You can customize this based on the type
-            inputs: 2, // Default inputs for the 'add' node
-            outputs: 1, // Default outputs for the 'add' node
+            label: 'Sub',
+            inputs: 2,
+            outputs: 1,
             inputValues: [],
+            inputTypes: ['Number', 'Number'],
             outputValues: [],
-            nodeFunction: (a, b) => a - b, // Default function for the 'add' node
+            outputTypes: ['Number'],
+            nodeFunction: (a, b) => a - b,
             minecraftStyle: applyMinecraftStyle,
           },
         },
         "mult" : {
           id: getId(),
-          type: 'customNode', // Set the type to 'customNode' (same as your 'add' node)
+          type: 'customNode',
           position,
           data: {
-            label: 'Mult', // You can customize this based on the type
-            inputs: 2, // Default inputs for the 'add' node
-            outputs: 1, // Default outputs for the 'add' node
+            label: 'Mult',
+            inputs: 2,
+            outputs: 1,
             inputValues: [],
+            inputTypes: ['Number', 'Number'],
             outputValues: [],
-            nodeFunction: (a, b) => a * b, // Default function for the 'add' node
+            outputTypes: ['Number'],
+            nodeFunction: (a, b) => a * b,
             minecraftStyle: applyMinecraftStyle,
           },
         },
         "div" : {
           id: getId(),
-          type: 'customNode', // Set the type to 'customNode' (same as your 'add' node)
+          type: 'customNode',
           position,
           data: {
-            label: 'Div', // You can customize this based on the type
-            inputs: 2, // Default inputs for the 'add' node
-            outputs: 1, // Default outputs for the 'add' node
+            label: 'Div',
+            inputs: 2,
+            outputs: 1,
             inputValues: [],
+            inputTypes: ['Number', 'Number'],
             outputValues: [],
-            nodeFunction: (a, b) => a / b, // Default function for the 'add' node
+            outputTypes: ['Number'],
+            nodeFunction: (a, b) => a / b,
             minecraftStyle: applyMinecraftStyle,
           },
         },
@@ -649,11 +704,13 @@ function NodeEditor() {
             inputs: 2,
             outputs: 1,
             inputValues: [],
+            inputTypes: ['Number', 'Number'],
             outputValues: [],
+            outputTypes: ['Number'],
             nodeFunction: (a, b) => Math.log(a) / Math.log(b),
             minecraftStyle: applyMinecraftStyle,
           },
-        }, 
+        },
         "out" : {
           id: getId(),
           type: 'customNode',
@@ -663,7 +720,9 @@ function NodeEditor() {
             inputs: 1,
             outputs: 0,
             inputValues: [],
+            inputTypes: ['Any'],
             outputValues: [],
+            outputTypes: [],
             nodeFunction: (a) => {},
             minecraftStyle: applyMinecraftStyle,
           },
@@ -710,7 +769,7 @@ function NodeEditor() {
   };
 
   const openFileBrowser = () => {
-    // Only open file browser if no file is selected or after file is removed
+    // Only open file browser if no file is selected
     if (!newNode.file) {
       if (applyMinecraftStyle) {
         chestOpenRef.current?.play();
@@ -719,28 +778,80 @@ function NodeEditor() {
     }
   };
 
-  const handleFile = (file) => {
-    // Store file in state
-    setNewNode({ ...newNode, file });
+  function createNodeFromJson(json) {
+    const nodeSpacingX = 200; // Horizontal spacing
+    const nodeSpacingY = 100; // Vertical spacing
 
-    // Optional: if you want to read and process the file immediately
-    // For example, read an image file and set it as a node background
-    // const reader = new FileReader();
-    // reader.onload = (e) => {
-    //   // Process file content
-    // };
-    // reader.readAsDataURL(file);
-  };
+    let maxX = 100; // Default starting X
+    let maxY = 100; // Default starting Y
 
-  // Add a new function to handle file removal
-  const handleRemoveFile = (e) => {
-    e.preventDefault(); // Prevent form submission
-    setNewNode({ ...newNode, file: null });
+    if (nodes.length > 0) {
+      maxX = Math.max(...nodes.map(node => node.position.x)) + nodeSpacingX;
 
-    // Reset the file input element itself
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+      // Find existing Y positions at maxX
+      const yPositionsAtMaxX = nodes
+        .filter(node => node.position.x === maxX - nodeSpacingX)
+        .map(node => node.position.y);
+
+      // Place the new node at a unique Y position
+      maxY = Math.max(...yPositionsAtMaxX, maxY) + nodeSpacingY;
     }
+    return {
+      id: `node_${json.id}`,
+      type: 'customNode',
+      position: { x: maxX, y: maxY },
+      data: {
+        inputs: json.inputs.length,
+        outputs: json.outputs.length,
+        inputValues: Array(json.inputs.length).fill(null),
+        inputTypes: json.inputs.map(input => input.datatype),
+        outputValues: Array(json.outputs.length).fill(null),
+        outputTypes: json.outputs.map(output => output.datatype),
+        nodeFunction: "Custom Function",
+        label: json.name,
+      },
+    };
+  }
+
+  const handleFile = (file) => {
+    // Store file in state (file is dragged and dropped)
+    // setNewNode({ ...newNode, file });
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      console.log(e.target.result);
+      try {
+        const base64String = e.target.result.split(',')[1]; // Extract base64 content from data URL
+        const jsonString = atob(base64String); // Decode base64
+        const json = JSON.parse(jsonString); // Parse JSON data
+        console.log(json)
+        
+        // Validate the JSON structure (simple example, modify as needed)
+        if (json.inputs && json.outputs && json.name) {
+          const apiUrl = `http://localhost:8000/api/add-node?meta_dir=${json.location}`;
+          fetch(apiUrl, {
+            method: 'GET',
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log('API Response:', data);
+              const newNode = createNodeFromJson(data);
+              console.log(newNode)
+              setNodes(prev => [...prev, newNode]);
+              
+              // setNewNode({ ...newNode});
+              setNeedsUpdate(true);
+            })
+            .catch((error) => console.error('API Error:', error));
+        } else {
+          console.error('Invalid node file structure');
+        }
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+      }
+    };
+
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -808,10 +919,41 @@ function NodeEditor() {
 
 
         <Background gap={20} variant={applyMinecraftStyle? null : "dots"} />
+        <Panel position="top-right">
+          <div className="add-menu">
+            {/* File drop area */}
+            <div
+              className={`file-drop-area ${isDragging ? 'active' : ''}`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onClick={newNode.file ? null : openFileBrowser} // Only open file browser if no file is selected
+            >
+              <div className="file-drop-text">
+                {!newNode.file ? (
+                  <>
+                    <div>Drag & drop a file here</div>
+                    <div>or click to browse</div>
+                  </>
+                ) : (
+                  <>
+                    <div>File selected:</div>
+                    <div className="file-name">{newNode.file.name}</div>
+                  </>
+                )}
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                style={{ display: 'none' }}
+                onChange={handleFileInputChange}
+              />
+            </div>
+          </div>
+        </Panel>
 
         <Panel position="top-left">
           <div className="add-menu">
-
             <h2 className="text-white text-lg mb-4">Add Node</h2>
             <form onSubmit={handleAddNode}>
               <input
@@ -842,34 +984,33 @@ function NodeEditor() {
                 value={newNode.nodeFunction}
                 onChange={(e) => setNewNode({ ...newNode, nodeFunction: e.target.value })}
               />
-
-              {/* File drop area */}
-              <div
-                className={`file-drop-area ${isDragging ? 'active' : ''}`}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={newNode.file ? null : openFileBrowser} // Only open file browser if no file is selected
-              >
-                <div className="file-drop-text">
-                  {!newNode.file ? (
-                    <>
-                      <div>Drag & drop a file here</div>
-                      <div>or click to browse</div>
-                    </>
-                  ) : (
-                    <>
-                      <div>File selected:</div>
-                      <div className="file-name">{newNode.file.name}</div>
-                    </>
-                  )}
+              <div className="type-fields">
+                <div>
+                  <label>Input Types:</label>
+                  <input
+                    type="text"
+                    placeholder="Number,String,Any"
+                    className="add-menu field"
+                    value={newNode.inputTypes.join(',')}
+                    onChange={(e) => {
+                      const types = e.target.value.split(',').map(t => t.trim());
+                      setNewNode({ ...newNode, inputTypes: types });
+                    }}
+                  />
                 </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  style={{ display: 'none' }}
-                  onChange={handleFileInputChange}
-                />
+                <div>
+                  <label>Output Types:</label>
+                  <input
+                    type="text"
+                    placeholder="Number,String,Any"
+                    className="add-menu field"
+                    value={newNode.outputTypes.join(',')}
+                    onChange={(e) => {
+                      const types = e.target.value.split(',').map(t => t.trim());
+                      setNewNode({ ...newNode, outputTypes: types });
+                    }}
+                  />
+                </div>
               </div>
 
               {/* Button container for better layout */}
@@ -880,17 +1021,6 @@ function NodeEditor() {
                 >
                   Add
                 </button>
-
-                {/* Only show remove button when a file is selected */}
-                {newNode.file && (
-                  <button
-                    type="button"
-                    className="remove-button"
-                    onClick={handleRemoveFile}
-                  >
-                    Remove
-                  </button>
-                )}
               </div>
             </form>
             {error && <p className="text-red-500 mt-2">{error}</p>}
