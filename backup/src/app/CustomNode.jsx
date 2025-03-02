@@ -13,6 +13,7 @@ function CustomNode({ id, data }) {
     nodeFunction,
     label,
     minecraftStyle = false
+    
   } = data;
 
   const isLampNode = outputs === 0;

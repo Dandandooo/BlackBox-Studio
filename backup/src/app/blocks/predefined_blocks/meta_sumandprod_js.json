@@ -1,0 +1,13 @@
+{
+    "name": "sumandprod_js",
+    "language": "javascript",
+    "run": "node sumAndProd.js",
+    "inputs": [
+        {"x": "float"},
+        {"y": "float"}
+    ],
+    "outputs": [
+        {"sum": "float"},
+        {"product": "float"}
+    ]
+}
