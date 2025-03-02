@@ -7,9 +7,9 @@ function CustomNode({ id, data }) {
     inputs = 1,
     outputs = 1,
     inputValues = [],
-    inputTypes = [],
+    inputTypes = [], // Now using inputTypes array
     outputValues = [],
-    outputTypes = [],
+    outputTypes = [], // Now using outputTypes array
     nodeFunction,
     label,
     minecraftStyle = false
@@ -47,6 +47,19 @@ function CustomNode({ id, data }) {
     return `${stringValue.substring(0, maxLength)}...`;
   };
 
+  // Helper to get color for type indicators
+  const getTypeColor = (type) => {
+    const typeColors = {
+      'Number': '#ff9800',  // Orange for numbers
+      'String': '#4caf50',  // Green for strings
+      'Bool': '#2196f3', // Blue for booleans
+      'Array': '#9c27b0',  // Purple for objects
+      'Json': '#e91e63',   // Pink for arrays
+      'FreeJson': '#607d8b',
+    };
+    return typeColors[type] || '#999999';
+  };
+
   return (
     <div
       className={`draggable-box ${minecraftStyle ? 'minecraft' : ''}`}
@@ -70,6 +83,7 @@ function CustomNode({ id, data }) {
           const hasValue = inputValues[i] !== undefined;
           const isNaN = hasValue && Number.isNaN(inputValues[i]);
           const isConnected = hasValue;
+          const inputType = inputTypes[i] || 'any';
 
           return (
             <div
@@ -87,9 +101,28 @@ function CustomNode({ id, data }) {
                 style={{
                   width: '10px',
                   height: '10px',
-                  background: isNaN ? 'red' : (isConnected ? 'green' : 'white')
+                  background: isNaN ? 'red' : (isConnected ? 'green' : 'white'),
+                  border: `2px solid ${getTypeColor(inputType)}`
                 }}
               />
+              {/* Type indicator */}
+              {!(hasValue && !isNaN) && (<span
+                className={`type-label ${minecraftStyle ? 'minecraft-text' : ''}`}
+                style={{
+                  position: 'absolute',
+                  left: '6px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  backgroundColor: getTypeColor(inputType),
+                  color: 'white',
+                  padding: '1px 3px',
+                  borderRadius: '4px',
+                  fontSize: '8px',
+                  fontWeight: 'bold'
+                }}
+              >
+                {inputType}
+              </span>)}
               {hasValue && !isNaN && (
                 <span
                   className={`value-label ${minecraftStyle ? 'minecraft-text' : ''}`}
@@ -117,6 +150,7 @@ function CustomNode({ id, data }) {
         {Array.from({ length: outputs }).map((_, i) => {
           const hasValue = outputValues[i] !== undefined;
           const isNaN = hasValue && Number.isNaN(outputValues[i]);
+          const outputType = outputTypes[i] || 'any';
 
           return (
             <div
@@ -134,9 +168,28 @@ function CustomNode({ id, data }) {
                 style={{
                   width: '10px',
                   height: '10px',
-                  background: hasValue && !isNaN ? 'green' : 'red'
+                  background: hasValue && !isNaN ? 'green' : 'red',
+                  border: `2px solid ${getTypeColor(outputType)}`
                 }}
               />
+              {/* Type indicator */}
+              <span
+                className={`type-label ${minecraftStyle ? 'minecraft-text' : ''}`}
+                style={{
+                  position: 'absolute',
+                  right: '0px',
+                  top: '30%',
+                  transform: 'translateY(-50%)',
+                  backgroundColor: getTypeColor(outputType),
+                  color: 'white',
+                  padding: '1px 3px',
+                  borderRadius: '4px',
+                  fontSize: '8px',
+                  fontWeight: 'bold'
+                }}
+              >
+                {outputType}
+              </span>
               {hasValue && !isNaN && (
                 <span
                   className={`value-label ${minecraftStyle ? 'minecraft-text' : ''}`}
