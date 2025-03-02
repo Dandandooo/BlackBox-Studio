@@ -141,7 +141,7 @@ function NodeEditor() {
   const leverOffRef = useRef(null);
   const anvilUseRef = useRef(null);
   const chestOpenRef = useRef(null);
-
+  const chestCloseRef = useRef(null);
 
   // Initialize audio on component mount
   useEffect(() => {
@@ -149,7 +149,7 @@ function NodeEditor() {
     leverOffRef.current = new Audio("https://storage.googleapis.com/soundboards/Games/MINECRAFT/MP3/NO4%20-%20AUDIO%20FROM%20JAYUZUMI.COM.mp3");
     anvilUseRef.current = new Audio("/anvil_use.wav");
     chestOpenRef.current = new Audio("/chestopen.wav");
-    
+    chestCloseRef.current = new Audio("/chestclose.wav");
 
   }, []);
 
@@ -701,6 +701,9 @@ function NodeEditor() {
   };
 
   const handleFileInputChange = (e) => {
+    if (applyMinecraftStyle) {
+      chestCloseRef.current?.play();
+    }
     if (e.target.files && e.target.files[0]) {
       handleFile(e.target.files[0]);
     }
