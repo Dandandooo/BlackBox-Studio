@@ -50,15 +50,22 @@ pub fn load_process(path: &Path) -> Result<Process, Box<dyn Error>>{
 
 
     let run = move |inputs: &Vec<String>| -> Result<Vec<String>, String> {
+        println!("started running closure");
+
         let jsn = json!(inputs);
+
+        println!("parsed inputs");
+
 
         let binding = Command::new(run_command.clone())
             .arg(jsn.to_string())
             .output().map_err(|err| err.to_string())?;
 
-        let process_output = binding
-            .stdout
-            .as_slice();
+        println!("started running closure");
+
+        let process_output = binding.stdout;
+
+        println!("stdout");
 
         Ok(json!(process_output)
             .as_array()

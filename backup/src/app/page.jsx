@@ -843,6 +843,13 @@ function NodeEditor() {
       try {
         const base64String = e.target.result.split(',')[1]; // Extract base64 content from data URL
         const jsonString = atob(base64String); // Decode base64
+
+        console.log("asdfsjh");
+        console.log("asdfsjh");
+        console.log("asdfsjh");
+        console.log("asdfsjh");
+        console.log(jsonString);
+        console.log("asdfsjh");
         const json = JSON.parse(jsonString); // Parse JSON data
         console.log(json)
 
