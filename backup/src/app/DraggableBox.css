@@ -376,3 +376,7 @@ cyan: "#85dacc",
 .remove-button:hover {
   background-color: #d65d70;
 }
+
+.dndnode:hover {
+  filter: brightness(0.8);
+}
