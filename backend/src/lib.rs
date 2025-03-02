@@ -206,9 +206,7 @@ impl Graph {
             let node = &self.nodes[front].as_ref().unwrap();
 
             if node.inputs.len() == 0 {
-                print!("going fo call func call");
                 let fun_call = (node.behavior)(&vec![]);
-                print!("{:?}", fun_call);
 
                     outputs.iter_mut()
                         .zip(fun_call?.into_iter())
