@@ -116,7 +116,7 @@ impl Graph {
             behavior
         };
 
-        if (new_node.inputs.is_empty()) {
+        if new_node.inputs.is_empty() {
             self.propogate(id)?;
         }
 
@@ -204,12 +204,19 @@ impl Graph {
             let mut outputs = std::mem::take(&mut self.nodes[front].as_mut().unwrap().outputs);
             let node = &self.nodes[front].as_ref().unwrap();
 
-            match node.inputs.iter().map(|port| port.value.clone()).collect::<Option<Vec<_>>>() {
-                None => outputs.iter_mut().for_each(|port| port.value = None),
-                Some(inputs) => outputs.iter_mut()
-                                    .zip((node.behavior)(&inputs)?.into_iter())
-                                    .for_each(|(old, new)| old.value = Some(new))
+            if node.inputs.len() == 0 {
+                    outputs.iter_mut()
+                        .zip((node.behavior)(&vec![])?.into_iter())
+                        .for_each(|(old, new)| old.value = Some(new));
+            } else {
+                match node.inputs.iter().map(|port| port.value.clone()).collect::<Option<Vec<_>>>() {
+                    None => outputs.iter_mut().for_each(|port| port.value = None),
+                    Some(inputs) => outputs.iter_mut()
+                                        .zip((node.behavior)(&inputs)?.into_iter())
+                                        .for_each(|(old, new)| old.value = Some(new))
+                }
             }
+
 
 
             outputs.iter().for_each(|oport| {
