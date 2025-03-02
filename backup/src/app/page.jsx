@@ -139,11 +139,15 @@ function NodeEditor() {
   // Audio references
   const leverOnRef = useRef(null);
   const leverOffRef = useRef(null);
+  const anvilUseRef = useRef(null);
+
 
   // Initialize audio on component mount
   useEffect(() => {
     leverOnRef.current = new Audio("https://storage.googleapis.com/soundboards/Games/MINECRAFT/MP3/LEVELUP%20-%20AUDIO%20FROM%20JAYUZUMI.COM.mp3");
     leverOffRef.current = new Audio("https://storage.googleapis.com/soundboards/Games/MINECRAFT/MP3/NO4%20-%20AUDIO%20FROM%20JAYUZUMI.COM.mp3");
+    anvilUseRef.current = new Audio("/anvil_use.wav");
+
   }, []);
 
   // Form state for adding new nodes
@@ -545,6 +549,9 @@ function NodeEditor() {
     };
 
     setNodes(prev => [...prev, newNodeObj]);
+    if (applyMinecraftStyle) {
+      anvilUseRef.current?.play();
+    }    
     setNewNode({ id: "", inputs: 0, outputs: 1, nodeFunction: "" });
     setNeedsUpdate(true);
   };
