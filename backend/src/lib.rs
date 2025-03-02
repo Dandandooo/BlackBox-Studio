@@ -16,37 +16,36 @@ enum BehaviorType {
 }
 
 #[derive(Debug, Eq, PartialEq, Deserialize, Serialize)]
-enum DataType {
+pub enum DataType {
     FreeJson,                            // any arbitrary json object
     Json(Vec<(String, DataType)>),       // specific json object
     Array(Box<DataType>),
     String,
-    Int,
-    Float,
+    Number,
     Bool,
 }
 
 
 #[derive(Debug, Eq, PartialEq, Deserialize, Serialize)]
 struct Port<T> {
-    name: String,               // for pattern matching
-    datatype: DataType,         // for type checking
+    pub name: String,               // for pattern matching
+    pub datatype: DataType,         // for type checking
     #[serde(skip_serializing)]
-    endpoint: T,    // for propogation
+    pub endpoint: T,    // for propogation
     #[serde(skip_serializing)]
-    value: Option<String>
+    pub value: Option<String>
 }
 
 
 #[derive(Serialize)]
 pub struct Node {
-    id: usize,          // identification
-    name: String,       // display name
-    inputs: Vec<Port<Option<(usize, usize)>>>,
-    outputs: Vec<Port<Vec<(usize, usize)>>>,
-    behavior_type: BehaviorType,
-    #[serde(skip_serializing)]
-    behavior: Behavior,    // TODO find signature
+    pub id: usize,          // identification
+    pub name: String,       // display name
+    pub inputs: Vec<Port<Option<(usize, usize)>>>,
+    pub outputs: Vec<Port<Vec<(usize, usize)>>>,
+    pub behavior_type: BehaviorType,
+        #[serde(skip_serializing)]
+    pub behavior: Behavior,    // TODO find signature
 }
 
 pub struct Graph {
@@ -56,13 +55,16 @@ pub struct Graph {
     tombstones: Vec<usize>,
 }
 
+
+
+type Propogation = Result<Vec<usize>, String>;
 impl Graph {
 
     pub fn new() -> Self {
         Graph {nodes: vec![], tombstones: vec![]}
     }
 
-    pub fn pop_node(&mut self, node_id: usize) -> Option<Node> {
+    pub fn remove_node(&mut self, node_id: usize) -> Propogation {
 
         if let Some(_) = self.nodes[node_id] {
             let node = std::mem::replace(&mut self.nodes[node_id], None).unwrap();
@@ -82,15 +84,12 @@ impl Graph {
                 self.nodes[*endpoint].as_mut().unwrap().inputs[*port].endpoint = None;
             });
 
+            let ret = self.propogate(node_id);
             self.tombstones.push(node_id);          // notify graph that this id is free
-            return std::mem::replace(&mut self.nodes[node_id], None);
+            return ret
         }
 
-        None
-    }
-
-    pub fn remove_node(&mut self, node_id: usize) {
-        let _ = self.pop_node(node_id);
+        Ok(vec![])
     }
 
     fn add_node(
@@ -142,12 +141,12 @@ impl Graph {
     }
 
     // will fail of a cycle is made
-    pub fn connect(&mut self, id_a: usize, port_a: usize, id_b: usize, port_b: usize) -> Result<(), String> {
+    pub fn connect(&mut self, id_a: usize, port_a: usize, id_b: usize, port_b: usize) -> Propogation {
         if let None = self.nodes[id_a] {
-            return Ok(());
+            return Ok(vec![]);
         }
         if let None = self.nodes[id_b] {
-            return Ok(());
+            return Ok(vec![]);
         }
 
         let node_a = self.nodes[id_a].as_mut().unwrap();
@@ -155,18 +154,16 @@ impl Graph {
         let node_b = self.nodes[id_b].as_mut().unwrap();
 
         node_b.inputs[port_b].endpoint = Some((id_a, port_a));
-        self.propogate(id_b);
-
-        Ok(())
+        self.propogate(id_b)
     }
 
     // will fail of a cycle is made
-    pub fn disconnect(&mut self, id_a: usize, port_a: usize, id_b: usize, port_b: usize) -> Result<(), String> {
+    pub fn disconnect(&mut self, id_a: usize, port_a: usize, id_b: usize, port_b: usize) -> Propogation {
         if let None = self.nodes[id_a] {
-            return Ok(());
+            return Ok(vec![]);
         }
         if let None = self.nodes[id_b] {
-            return Ok(());
+            return Ok(vec![]);
         }
 
         let position = self.nodes[id_a]
@@ -180,9 +177,7 @@ impl Graph {
         self.nodes[id_a].as_mut().unwrap().outputs[port_a].endpoint.remove(position);
         self.nodes[id_b].as_mut().unwrap().inputs[port_b].endpoint = None;
 
-        self.propogate(id_b);
-
-        Ok(())
+        self.propogate(id_b)
     }
 
     pub fn propogate(&mut self, node_id: usize) -> Result<Vec<usize>, String> {

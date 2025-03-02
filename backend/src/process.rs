@@ -7,8 +7,6 @@ use std::fs::File;
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
 
-static META_NAME: &str = "meta.json";
-
 /*** 
 * METADATA STRUCTURE:
 * {
@@ -115,8 +113,8 @@ pub fn parse_type(v: &Value) -> Result<DataType, Box<dyn Error>> {
     let literal = |str| -> Result<DataType, Box<dyn Error>> {
         match str {
             "string" => Ok(DataType::String),
-            "int" => Ok(DataType::Int),
-            "float" => Ok(DataType::Float),
+            "int" => Ok(DataType::Number),
+            "float" => Ok(DataType::Number),
             "bool" => Ok(DataType::Bool),
             _ => Err(format!("invalid type: {str}").into())
         }
@@ -141,7 +139,6 @@ pub fn parse_type(v: &Value) -> Result<DataType, Box<dyn Error>> {
 
     }
 }
-
 
 pub struct Process {
     pub name: String,
