@@ -7,6 +7,9 @@ import {
   addEdge,
   useNodesState,
   useEdgesState,
+  useReactFlow,
+  ReactFlowProvider,
+  getOutgoers,
 } from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
@@ -84,7 +87,7 @@ const ReactFlowStyled = styled(ReactFlow)`
 `;
 
 
-export default function App() {
+const Flow = () => {
   const [nodes, , onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [nodeMenu, setNodeMenu] = useState(null);
@@ -154,6 +157,31 @@ export default function App() {
     onNodesChange([...nodes, newNode]);
   })
 
+  const { getNodes, getEdges } = useReactFlow();
+ 
+  const isValidConnection = useCallback(
+    (connection) => {
+      // we are using getNodes and getEdges helpers here
+      // to make sure we create isValidConnection function only once
+      const nodes = getNodes();
+      const edges = getEdges();
+      const target = nodes.find((node) => node.id === connection.target);
+      const hasCycle = (node, visited = new Set()) => {
+        if (visited.has(node.id)) return false;
+
+        visited.add(node.id);
+
+        for (const outgoer of getOutgoers(node, nodes, edges)) {
+          if (outgoer.id === connection.source) return true;
+          if (hasCycle(outgoer, visited)) return true;
+        }
+      };
+ 
+      if (target.id === connection.source) return false;
+      return !hasCycle(target);
+    },
+    [getNodes, getEdges],
+  );
 
   return (
     <ThemeProvider theme={theme === "light" ? Light : Dark}>
@@ -176,6 +204,7 @@ export default function App() {
         onConnect={onConnect}
         // colorMode={ThemeSwitcher.}
         fitView
+        isValidConnection={isValidConnection}
       >
         <Background/>
         {paneMenu && <NodeContextMenu {...paneMenu} onAddNode={handleAddNode} />}
@@ -187,3 +216,9 @@ export default function App() {
     </ThemeProvider>
   );
 }
+
+export default () => (
+  <ReactFlowProvider>
+    <Flow />
+  </ReactFlowProvider>
+);
