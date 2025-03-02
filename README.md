@@ -1,7 +1,7 @@
 # BlackBox Studio
 <p>
-    <img src="https://img.shields.io/badge/Contributors-4-purple?logo=github" alt="Four Contributors" > 
-    <img src="https://img.shields.io/badge/Minecraft References-∞-green?logo=mojang studios" alt="Infinite Minecraft References"> 
+    <img src="https://img.shields.io/badge/Contributors-4-purple?logo=github" alt="Four Contributors" >
+    <img src="https://img.shields.io/badge/Minecraft References-∞-green?logo=mojang studios" alt="Infinite Minecraft References">
     <img src="https://img.shields.io/badge/Frontend-React-blue?logo=react" alt="React Frontend">
     <img src="https://img.shields.io/badge/Backend-Actix-orange?logo=rust" alt="Actix Backend">
 </p>
@@ -14,12 +14,12 @@
 ## Inspiration
 Graphs are cool. They let us represent ideas as webs of complex relationships and intricate behavior. Sometimes, we wish we could develop our code in this kind of idea web, linking functions to each other in a graphical way.
 
-To address this issue, we came up with Blackbox Studio, a tool that helps you form this complex web of functionality, where each function could be written in a different language.
+To address this issue, we came up with Blackbox Studio, a tool that helps you form this complex web of functionality.
 
 ## What it does
 BlackBox Studio has three main goals:
 1. Isolate functions into black boxes, with input and output interfaces.
-2. Communicate between functions, regardless of the language.
+2. Communicate between functions.
 3. Build a graph view of information flow between functions.
 
 ## How we built it
@@ -39,11 +39,11 @@ We built our service in two separate servers:
 1. Interprocess Communication
 2. Learning to fight with default styling
 3. JSON parsing errors during backend graph crawling
+4. Interlanguage communication
 
 ## Accomplishments that we're proud of
 1. Gorgeous graph interface
 2. Snappy function I/O
-3. Inter-language communication
 4. _Super Secret Settings_
 
 ## What we learned
@@ -55,3 +55,4 @@ Apart from minor visual touch ups, some useful features for the future include:
 2. D3-Force implementation: adding physics simulation to make the graph interface feel more intuitive.
 3. Packaging into electron. Currently, it is a web-based studio.
 4. Minimizing the menus
+5. Finalizing inter-language communication
