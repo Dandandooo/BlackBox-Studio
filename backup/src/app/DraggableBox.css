@@ -9,7 +9,7 @@ cyan: "#85dacc",
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 .minecraft-font {
-  font-family: 'Press Start 2P', cursive !important;
+  font-family: '/Monocraft.ttc' cursive !important;
   font-size: 10px !important;
   letter-spacing: 1px;
 }
@@ -144,4 +144,15 @@ cyan: "#85dacc",
 }
 .react-flow__minimap-node {
   fill: #6ab0f3;
+}
+
+.add-menu {
+  font-family: CaskaydiaCove Nerd Font, monospace;
+  background-color: #f38d70;
+  border: 2px solid #a86145;
+}
+
+.add-menu.field {
+  background-color: black;
+
 }

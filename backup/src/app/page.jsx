@@ -562,35 +562,35 @@ export default function NodeEditor() {
         <Background gap={20} variant={applyMinecraftStyle? null : "dots"} />
 
         <Panel position="top-left">
-          <div className="bg-gray-700 p-4 rounded-md w-[200px] z-50">
+          <div className="add-menu bg-gray-700 p-4 rounded-md w-[200px] z-50">
 
             <h2 className="text-white text-lg mb-4">Add Node</h2>
             <form onSubmit={handleAddNode}>
               <input
                 type="text"
                 placeholder="Node ID"
-                className="w-full p-2 mb-2 rounded text-black"
+                className="add-menu.field w-full p-2 mb-2 rounded text-black"
                 value={newNode.id}
                 onChange={(e) => setNewNode({ ...newNode, id: e.target.value })}
               />
               <input
                 type="number"
                 placeholder="Inputs"
-                className="w-full p-2 mb-2 rounded text-black"
+                className="add-menu.field w-full p-2 mb-2 rounded text-black"
                 value={newNode.inputs}
                 onChange={(e) => setNewNode({ ...newNode, inputs: e.target.value })}
               />
               <input
                 type="number"
                 placeholder="Outputs"
-                className="w-full p-2 rounded text-black"
+                className="add-menu.field w-full p-2 rounded text-black"
                 value={newNode.outputs}
                 onChange={(e) => setNewNode({ ...newNode, outputs: e.target.value })}
               />
               <input
                 type="text"
                 placeholder="Node Function"
-                className="w-full p-2 rounded text-black"
+                className="add-menu.field w-full p-2 rounded text-black"
                 value={newNode.nodeFunction}
                 onChange={(e) => setNewNode({ ...newNode, nodeFunction: e.target.value })}
               />
