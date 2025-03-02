@@ -294,8 +294,8 @@ export default function NodeEditor() {
       if (hasAllRequiredInputs) {
         try {
           // Filter out undefined values from inputs that don't have connections
-          const validInputs = node.data.inputValues.filter(val => val !== undefined);
-          const result = node.data.nodeFunction(...validInputs);
+          const result = node.data.nodeFunction(...node.data.inputValues);
+
           node.data.outputValues = Array.isArray(result) ? result : [result];
         } catch (error) {
           console.error(`Error calculating output for node ${nodeId}:`, error);
