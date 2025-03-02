@@ -701,7 +701,7 @@ function NodeEditor() {
   };
 
   const handleFileInputChange = (e) => {
-    if (e.target.files && e.target.files[0]) {s
+    if (e.target.files && e.target.files[0]) {
       handleFile(e.target.files[0]);
     }
   };
