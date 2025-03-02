@@ -1,172 +1,405 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import DraggableBox from "./DraggableBox";
-import ConnectionManager from "./ConnectionManager";
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import {
+  ReactFlow,
+  addEdge,
+  Background,
+  Controls,
+  MiniMap,
+  useNodesState,
+  useEdgesState,
+  Panel,
+} from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
+import './DraggableBox.css'; // We'll keep some of your styling
 
+// Custom node component
+import CustomNode from './CustomNode';
+
+// Register custom node types
+const nodeTypes = {
+  customNode: CustomNode,
+};
 
 export default function NodeEditor() {
-  // -- Node definitions from "updated upstream"
-  const [nodes, setNodes] = useState({
-    "var x": {
-      id: "var x",
+  // Initial nodes based on your existing nodes object
+  const initialNodes = [
+    {
+      id: 'var x',
+      type: 'customNode',
       position: { x: 300, y: 0 },
-      inputs: 0,
-      outputs: 1,
-      inputValues: [],
-      outputValues: [10],
-      nodeFunction: () => 10,
+      data: { 
+        inputs: 0, 
+        outputs: 1, 
+        inputValues: [], 
+        outputValues: [10],
+        nodeFunction: () => 10,
+        label: 'var x' 
+      }
     },
-    "var y": {
-      id: "var y",
-      position: { x: 300, y: 50 },
-      inputs: 0,
-      outputs: 1,
-      inputValues: [],
-      outputValues: [30],
-      nodeFunction: () => 30,
+    {
+      id: 'var y',
+      type: 'customNode',
+      position: { x: 300, y: 200   },
+      data: { 
+        inputs: 0, 
+        outputs: 1, 
+        inputValues: [], 
+        outputValues: [30],
+        nodeFunction: () => 30,
+        label: 'var y' 
+      }
     },
-    "add": {
-      id: "add",
-      position: { x: 600, y: -192 * 2 },
-      inputs: 2,
-      outputs: 1,
-      inputValues: [],
-      outputValues: [],
-      nodeFunction: (a, b) => a + b,
+    {
+      id: 'add',
+      type: 'customNode',
+      position: { x: 600, y: 0 },
+      data: { 
+        inputs: 2, 
+        outputs: 1, 
+        inputValues: [], 
+        outputValues: [],
+        nodeFunction: (a, b) => a + b,
+        label: 'add' 
+      }
     },
-    "mult": {
-      id: "mult",
-      position: { x: 600, y: -192 * 2 + 50 },
-      inputs: 2,
-      outputs: 1,
-      inputValues: [],
-      outputValues: [],
-      nodeFunction: (a, b) => a * b,
+    {
+      id: 'mult',
+      type: 'customNode',
+      position: { x: 600, y: 200 },
+      data: { 
+        inputs: 2, 
+        outputs: 1, 
+        inputValues: [], 
+        outputValues: [],
+        nodeFunction: (a, b) => a * b,
+        label: 'mult' 
+      }
     },
-    "div": {
-      id: "div",
-      position: { x: 900, y: -192 * 4 },
-      inputs: 2,
-      outputs: 1,
-      inputValues: [],
-      outputValues: [],
-      nodeFunction: (a, b) => a / b,
+    {
+      id: 'div',
+      type: 'customNode',
+      position: { x: 900, y: 0 },
+      data: { 
+        inputs: 2, 
+        outputs: 1, 
+        inputValues: [], 
+        outputValues: [],
+        nodeFunction: (a, b) => a / b,
+        label: 'div' 
+      }
     },
-    "sub": {
-      id: "sub",
-      position: { x: 900, y: -192 * 4 + 50 },
-      inputs: 2,
-      outputs: 1,
-      inputValues: [],
-      outputValues: [],
-      nodeFunction: (a, b) => a - b,
+    {
+      id: 'sub',
+      type: 'customNode',
+      position: { x: 900, y: 200 },
+      data: { 
+        inputs: 2, 
+        outputs: 1, 
+        inputValues: [], 
+        outputValues: [],
+        nodeFunction: (a, b) => a - b,
+        label: 'sub' 
+      }
     },
-  });
+  ];
 
-  // -- Connections array
-  const [connections, setConnections] = useState([]);
+  // State for React Flow nodes and edges
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  
+  // Minecraft styling state
+  const [applyMinecraftStyle, setApplyMinecraftStyle] = useState(false);
+  
+  // Audio references
+  const leverOnRef = useRef(null);
+  const leverOffRef = useRef(null);
 
-  // -- Node creation form state
+  // Initialize audio on component mount
+  useEffect(() => {
+    leverOnRef.current = new Audio("https://storage.googleapis.com/soundboards/Games/MINECRAFT/MP3/LEVELUP%20-%20AUDIO%20FROM%20JAYUZUMI.COM.mp3");
+    leverOffRef.current = new Audio("https://storage.googleapis.com/soundboards/Games/MINECRAFT/MP3/NO4%20-%20AUDIO%20FROM%20JAYUZUMI.COM.mp3");
+  }, []);
+
+  // Form state for adding new nodes
   const [newNode, setNewNode] = useState({
-    id: "",
+    id: '',
     inputs: 0,
     outputs: 1,
-    position: { x: 0, y: 0 },
-    nodeFunction: "",
+    nodeFunction: '',
   });
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
-  const [applyMinecraftStyle, setApplyMinecraftStyle] = useState(false); // State for toggling Minecraft style
+  // Track when updates are needed to prevent infinite loops
+  const [needsUpdate, setNeedsUpdate] = useState(false);
 
-  // -- Toggle the Minecraft style
-  // var leverSound = new Audio("/levelup.mp3");
-  var leverOn = new Audio("https://storage.googleapis.com/soundboards/Games/MINECRAFT/MP3/LEVELUP%20-%20AUDIO%20FROM%20JAYUZUMI.COM.mp3");
-  var leverOff = new Audio("https://storage.googleapis.com/soundboards/Games/MINECRAFT/MP3/NO4%20-%20AUDIO%20FROM%20JAYUZUMI.COM.mp3")
-  const toggleMinecraftStyle = () => {
-    if (!applyMinecraftStyle) leverOn.play();
-    else leverOff.play();
-    setApplyMinecraftStyle(!applyMinecraftStyle);
-  };
-
-  // -- Logic to compute node output
-  const calculateNodeOutput = (node) => {
-    if (
-      node.nodeFunction &&
-      node.inputValues.length === node.inputs &&
-      node.inputValues.every((val) => val !== undefined && val !== null)
-    ) {
-      const result = node.nodeFunction(...node.inputValues);
-      return Array.isArray(result) ? result : [result];
+  // Handle edge connections
+  const onConnect = useCallback((params) => {
+    // Check if this connection would create a cycle
+    if (wouldCreateCycle(params.source, params.target, edges)) {
+      console.warn("Connection rejected: would create a cycle");
+      return;
     }
-    return node.outputValues;
-  };
 
-  // -- Apply output calc to every node
-  const updateAllNodeOutputs = (updatedNodes) => {
-    Object.keys(updatedNodes).forEach((nodeId) => {
-      updatedNodes[nodeId].outputValues = calculateNodeOutput(updatedNodes[nodeId]);
+    // Find the source and target nodes
+    const sourceNode = nodes.find(n => n.id === params.source);
+    const targetNode = nodes.find(n => n.id === params.target);
+    
+    if (!sourceNode || !targetNode) return;
+    
+    // Extract the source and target port indices from the handle IDs
+    const sourcePortIndex = params.sourceHandle ? parseInt(params.sourceHandle.split('-')[1]) : 0;
+    const targetPortIndex = params.targetHandle ? parseInt(params.targetHandle.split('-')[1]) : 0;
+    
+    // Remove any existing connections to this target handle
+    const filteredEdges = edges.filter(edge => 
+      !(edge.target === params.target && edge.targetHandle === params.targetHandle)
+    );
+    
+    // Add the new edge
+    const newEdge = {
+      id: `e${params.source}-${sourcePortIndex}-${params.target}-${targetPortIndex}`,
+      source: params.source,
+      target: params.target,
+      sourceHandle: params.sourceHandle,
+      targetHandle: params.targetHandle,
+      // Attach data that we'll need for calculating values
+      data: {
+        sourcePortIndex,
+        targetPortIndex
+      }
+    };
+    
+    // Set the edges with the filtered list plus the new edge
+    setEdges([...filteredEdges, newEdge]);
+    
+    // Flag that we need to update values
+    setNeedsUpdate(true);
+  }, [nodes, edges, setEdges]);
+
+  // Check if a new connection would create a cycle
+  const wouldCreateCycle = (sourceNodeId, targetNodeId, currentEdges) => {
+    if (sourceNodeId === targetNodeId) {
+      return true;
+    }
+
+    // Create an adjacency list representation of the graph
+    const graph = {};
+    currentEdges.forEach(edge => {
+      if (!graph[edge.source]) {
+        graph[edge.source] = [];
+      }
+      graph[edge.source].push(edge.target);
     });
-    return updatedNodes;
+
+    // Add the potential new edge
+    if (!graph[sourceNodeId]) {
+      graph[sourceNodeId] = [];
+    }
+    graph[sourceNodeId].push(targetNodeId);
+
+    // DFS to detect cycles
+    const visited = new Set();
+    const stack = new Set();
+
+    const hasCycle = (nodeId) => {
+      if (!nodeId || !graph[nodeId]) return false;
+      if (stack.has(nodeId)) return true;
+      if (visited.has(nodeId)) return false;
+
+      visited.add(nodeId);
+      stack.add(nodeId);
+
+      for (const neighbor of graph[nodeId]) {
+        if (hasCycle(neighbor)) {
+          return true;
+        }
+      }
+
+      stack.delete(nodeId);
+      return false;
+    };
+
+    return hasCycle(sourceNodeId);
   };
 
-  // -- Called when connections change
-  const handleConnectionsUpdate = (updatedConnections) => {
-    // Using a functional update form to ensure we work with the latest state
-    setNodes((prevNodes) => {
-      const updatedNodes = { ...prevNodes };
-
-      // Update a single node's inputs + outputs based on connections
-      const updateNode = (nodeId) => {
-        const node = updatedNodes[nodeId];
-        if (!node) return;
-
-        // Rebuild input array from connections that end at this node
-        const newInputs = Array(node.inputs).fill(undefined);
-        updatedConnections.forEach((conn) => {
-          if (conn.end.nodeId === nodeId) {
-            const startNode = updatedNodes[conn.start.nodeId];
-            if (startNode) {
-              newInputs[conn.end.id] = startNode.outputValues[conn.start.id];
-            }
-          }
-        });
-        node.inputValues = newInputs;
-
-        // If all inputs are valid, compute outputs; otherwise clear
-        if (
-          node.inputValues.length === node.inputs &&
-          node.inputValues.every((val) => val !== undefined && val !== null)
-        ) {
-          node.outputValues = calculateNodeOutput(node);
-        } else {
-          node.outputValues = [];
+  // Update node values based on connections
+const updateNodeValues = useCallback(() => {
+  // Create a DEEP copy of nodes to modify
+  const updatedNodes = nodes.map(node => ({
+    ...node,
+    data: {
+      ...node.data,
+      inputValues: Array(node.data.inputs).fill(undefined)
+    }
+  }));
+  
+  // Calculate node dependencies (topological sort)
+  const nodeDependencies = calculateNodeDependencies(updatedNodes, edges);
+  
+  // Process nodes in the order of the topological sort
+  for (const nodeId of nodeDependencies) {
+    const nodeIndex = updatedNodes.findIndex(n => n.id === nodeId);
+    if (nodeIndex === -1) continue;
+    
+    const node = updatedNodes[nodeIndex];
+    
+    // For source nodes with no inputs, calculate outputs
+    if (node.data.inputs === 0) {
+      try {
+        const result = node.data.nodeFunction();
+        node.data.outputValues = Array.isArray(result) ? result : [result];
+      } catch (error) {
+        console.error(`Error calculating output for source node ${nodeId}:`, error);
+        node.data.outputValues = [];
+      }
+      continue;
+    }
+    
+    // Find all edges that target this node
+    const incomingEdges = edges.filter(e => e.target === nodeId);
+    
+    // Update input values based on connected nodes' outputs
+    incomingEdges.forEach(edge => {
+      const sourceNode = updatedNodes.find(n => n.id === edge.source);
+      if (!sourceNode) return;
+      
+      const sourcePortIndex = parseInt(edge.sourceHandle?.split('-')[1]) || 0;
+      const targetPortIndex = parseInt(edge.targetHandle?.split('-')[1]) || 0;
+      
+      if (sourceNode.data.outputValues && sourceNode.data.outputValues[sourcePortIndex] !== undefined) {
+        node.data.inputValues[targetPortIndex] = sourceNode.data.outputValues[sourcePortIndex];
+      }
+    });
+    
+    // Calculate outputs if all required inputs are valid
+    const hasAllRequiredInputs = node.data.inputs === 0 || 
+      node.data.inputValues.filter((val, i) => {
+        // Check if this input has a connection
+        return edges.some(e => e.target === nodeId && parseInt(e.targetHandle?.split('-')[1]) === i);
+      }).every(val => val !== undefined);
+      
+    if (hasAllRequiredInputs) {
+      try {
+        // Filter out undefined values from inputs that don't have connections
+        const validInputs = node.data.inputValues.filter(val => val !== undefined);
+        const result = node.data.nodeFunction(...validInputs);
+        node.data.outputValues = Array.isArray(result) ? result : [result];
+      } catch (error) {
+        console.error(`Error calculating output for node ${nodeId}:`, error);
+        node.data.outputValues = [];
+      }
+    } else {
+      node.data.outputValues = [];
+    }
+  }
+  
+  // Update the nodes state with completely new node objects
+  setNodes(prevNodes => {
+    return updatedNodes.map(updatedNode => {
+      const prevNode = prevNodes.find(n => n.id === updatedNode.id);
+      // Create a new node object with updated data to ensure React detects the change
+      return {
+        ...prevNode,
+        data: {
+          ...prevNode.data,
+          inputValues: [...updatedNode.data.inputValues],
+          outputValues: [...(updatedNode.data.outputValues || [])]
         }
       };
-
-      // Identify all affected nodes and update them
-      const affectedNodes = new Set();
-      updatedConnections.forEach((conn) => {
-        affectedNodes.add(conn.start.nodeId);
-        affectedNodes.add(conn.end.nodeId);
-      });
-
-      // Update only the affected nodes
-      affectedNodes.forEach((nodeId) => {
-        updateNode(nodeId);
-      });
-
-      return updatedNodes;  // Return updated nodes state
     });
+  });
+  
+  // Reset the needs update flag
+  setNeedsUpdate(false);
+}, [nodes, edges, setNodes]);
+
+  // Calculate the order in which nodes should be processed (topological sort)
+  const calculateNodeDependencies = (nodes, edges) => {
+    // Create an adjacency list
+    const graph = {};
+    nodes.forEach(node => {
+      graph[node.id] = [];
+    });
+    
+    edges.forEach(edge => {
+      if (!graph[edge.source]) {
+        graph[edge.source] = [];
+      }
+      graph[edge.source].push(edge.target);
+    });
+    
+    // Topological sort
+    const visited = new Set();
+    const temp = new Set();
+    const order = [];
+    
+    const visit = (nodeId) => {
+      if (temp.has(nodeId)) return; // Cycle detected
+      if (visited.has(nodeId)) return;
+      
+      temp.add(nodeId);
+      
+      if (graph[nodeId]) {
+        for (const neighbor of graph[nodeId]) {
+          visit(neighbor);
+        }
+      }
+      
+      temp.delete(nodeId);
+      visited.add(nodeId);
+      order.unshift(nodeId); // Add to front (reversed for dependency order)
+    };
+    
+    // Visit each node
+    for (const node of nodes) {
+      if (!visited.has(node.id)) {
+        visit(node.id);
+      }
+    }
+    
+    return order;
   };
 
-  // -- Re-run output calculations whenever connections change
+  // Update values when needed (replaces the previous useEffect that created infinite loop)
   useEffect(() => {
-    const updatedNodes = updateAllNodeOutputs({ ...nodes });
-    setNodes(updatedNodes);
-  }, [connections]);
+    if (needsUpdate) {
+      updateNodeValues();
+    }
+  }, [needsUpdate, updateNodeValues]);
 
-  // -- Helpers for creating a new node via the form
+  // Edge removal handler - ensure values are updated after edge removal
+  const handleEdgesChange = useCallback((changes) => {
+    onEdgesChange(changes);
+    
+    // Check if any edges were removed
+    const hasRemovals = changes.some(change => change.type === 'remove');
+    if (hasRemovals) {
+      setNeedsUpdate(true);
+    }
+  }, [onEdgesChange]);
+
+  // Toggle Minecraft style
+  const toggleMinecraftStyle = () => {
+    if (!applyMinecraftStyle) {
+      leverOnRef.current?.play();
+    } else {
+      leverOffRef.current?.play();
+    }
+    setApplyMinecraftStyle(!applyMinecraftStyle);
+    
+    // Update nodes with the new style
+    setNodes(nodes.map(node => ({
+      ...node,
+      data: {
+        ...node.data,
+        minecraftStyle: !applyMinecraftStyle
+      }
+    })));
+  };
+
+  // Function to count arguments in a function string
   const countFunctionArgs = (funcStr) => {
     const match = funcStr.match(/\(([^)]*)\)/);
     if (match && match[1]) {
@@ -178,204 +411,185 @@ export default function NodeEditor() {
     return 0;
   };
 
+  // Validate node ID
   const validateNodeId = (id) => {
     if (!id) return "Node ID cannot be empty.";
     if (/\s/.test(id)) return "Node ID cannot contain spaces.";
-    if (nodes[id]) return "Node ID already exists.";
+    if (nodes.some(node => node.id === id)) return "Node ID already exists.";
     return "";
   };
 
+  // Add a new node
   const handleAddNode = (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    // Validate ID
-    const nodeIdError = validateNodeId(newNode.id);
-    if (nodeIdError) {
-      setError(nodeIdError);
-      return;
-    }
+  const nodeIdError = validateNodeId(newNode.id);
+  if (nodeIdError) {
+    setError(nodeIdError);
+    return;
+  }
 
-    // Parse the user function
-    let parsedFunction;
-    try {
-      if (newNode.nodeFunction && typeof newNode.nodeFunction === "string") {
-        const func = new Function("return " + newNode.nodeFunction);
-        parsedFunction = func();
-
-        const numArgs = countFunctionArgs(newNode.nodeFunction);
-        if (numArgs !== newNode.inputs) {
-          setError(
-            `The number of inputs (${newNode.inputs}) must match the number of function arguments (${numArgs}).`
-          );
-          return;
-        } else {
-          setError("");
-        }
+  let parsedFunction;
+  try {
+    if (newNode.nodeFunction && typeof newNode.nodeFunction === "string") {
+      const func = new Function("return " + newNode.nodeFunction);
+      parsedFunction = func();
+      
+      const numArgs = countFunctionArgs(newNode.nodeFunction);
+      if (numArgs !== parseInt(newNode.inputs)) {
+        setError(`The number of inputs (${newNode.inputs}) must match the number of function arguments (${numArgs}).`);
+        return;
       } else {
-        throw new Error("Function is not provided or invalid");
+        setError("");
       }
-    } catch (error) {
-      console.error("Function evaluation failed:", error.message);
-      return;
+    } else {
+      throw new Error("Invalid function");
     }
+  } catch (error) {
+    console.error("Function evaluation failed:", error.message);
+    setError("Function evaluation failed: " + error.message);
+    return;
+  }
 
-    // Add the new node to state
-    setNodes((prevNodes) => {
-      const newNodes = { ...prevNodes };
-      const newId = newNode.id;
+  // **Smart Positioning Logic**
+  const nodeSpacingX = 200; // Horizontal spacing
+  const nodeSpacingY = 100; // Vertical spacing
+  
+  let maxX = 100; // Default starting X
+  let maxY = 100; // Default starting Y
+  
+  if (nodes.length > 0) {
+    maxX = Math.max(...nodes.map(node => node.position.x)) + nodeSpacingX;
 
-      // Position the new node below the highest existing node
-      const lowestY = Math.min(...Object.values(prevNodes).map((node) => node.position.y));
-      const newNodePosition = { x: 300, y: lowestY + 100 };
+    // Find existing Y positions at maxX
+    const yPositionsAtMaxX = nodes
+      .filter(node => node.position.x === maxX - nodeSpacingX)
+      .map(node => node.position.y);
 
-      newNodes[newId] = {
-        id: newId,
-        position: newNodePosition,
-        inputs: newNode.inputs,
-        outputs: newNode.outputs,
-        inputValues: [],
-        outputValues: newNode.inputs === 0 ? [parsedFunction()] : [],
-        nodeFunction: parsedFunction,
-      };
+    // Place the new node at a unique Y position
+    maxY = Math.max(...yPositionsAtMaxX, maxY) + nodeSpacingY;
+  }
 
-      return newNodes;
-    });
-
-    // Reset the form
-    setNewNode({
-      id: "",
-      inputs: 0,
-      outputs: 1,
-      position: { x: 0, y: 0 },
-      nodeFunction: "",
-    });
+  const newNodeObj = {
+    id: newNode.id,
+    type: "customNode",
+    position: { x: maxX, y: maxY },
+    data: {
+      inputs: parseInt(newNode.inputs),
+      outputs: parseInt(newNode.outputs),
+      inputValues: [],
+      outputValues: parseInt(newNode.inputs) === 0 ? [parsedFunction()] : [],
+      nodeFunction: parsedFunction,
+      label: newNode.id,
+      minecraftStyle: applyMinecraftStyle,
+    },
   };
 
-  // -- Size of the underlying "canvas"
-  const canvasWidth = 5000;
-  const canvasHeight = 5000;
+  setNodes(prev => [...prev, newNodeObj]);
+  setNewNode({ id: "", inputs: 0, outputs: 1, nodeFunction: "" });
+  setNeedsUpdate(true);
+};
 
-  // lever sound
-
-  // -- Render
   return (
     <div
-      className="flex flex-row overflow-auto p-8"
       style={{
-        width: "100vw",
-        height: "100vh",
-        // Dark overlay + repeating dirt.jpg (or your image):
+        width: '100vw',
+        height: '100vh',
         backgroundImage: applyMinecraftStyle
-        ? 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("/dirt.jpg")'
-        : 'none',
+          ? 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("/dirt.jpg")'
+          : 'none',
         backgroundColor: applyMinecraftStyle ? 'transparent' : '#333',
         backgroundBlendMode: "multiply",
         backgroundRepeat: "repeat",
-        // Adjust tile size to your preference:
         backgroundSize: "100px 100px",
       }}
     >
-      {/* The big "canvas" area where nodes and connections are placed */}
-      <div
-        className="relative"
-        style={{
-          width: `${canvasWidth}px`,
-          height: `${canvasHeight}px`,
-        }}
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={handleEdgesChange}
+        onConnect={onConnect}
+        nodeTypes={nodeTypes}
+        fitView
       >
-        <ConnectionManager onUpdateConnections={handleConnectionsUpdate}>
-          {Object.keys(nodes).map((key) => {
-            const node = nodes[key];
-            return (
-              <DraggableBox
-                key={node.id}
-                id={node.id}
-                defaultPosition={node.position}
-                inputs={node.inputs}
-                outputs={node.outputs}
-                inputValues={node.inputValues}
-                outputValues={node.outputValues}
-                nodeFunction={node.nodeFunction}
-                className={applyMinecraftStyle ? "minecraft" : ""}
-              >
-                {node.id}
-              </DraggableBox>
-            );
-          })}
-        </ConnectionManager>
-      </div>
+        <Controls />
+        <MiniMap />
+        <Background variant={applyMinecraftStyle ? "dots" : "lines"} gap={20} size={1} />
+        
+        <Panel position="top-left">
+          <div className="bg-gray-700 p-4 rounded-md w-[200px] z-50">
+            <button onClick={toggleMinecraftStyle} className="mt-1 mb-4">
+              <img
+                src={applyMinecraftStyle ? "/lever_off.png" : "/lever_on.png"}
+                alt="Minecraft Lever"
+                className="w-20 h-auto transition-transform duration-200"
+              />
+            </button>
+            
+            <h2 className="text-white text-lg mb-4">Add Node</h2>
+            <form onSubmit={handleAddNode}>
+              <div className="mb-2">
+                <label className="text-white">Node ID</label>
+                <input
+                  type="text"
+                  className="p-2 mt-1 w-full"
+                  value={newNode.id}
+                  onChange={(e) => setNewNode({ ...newNode, id: e.target.value })}
+                  placeholder="Node ID"
+                />
+              </div>
+              
+              <div className="mb-2">
+                <label className="text-white">Number of Inputs</label>
+                <input
+                  type="number"
+                  className="p-2 mt-1 w-full"
+                  value={newNode.inputs}
+                  onChange={(e) =>
+                    setNewNode({ ...newNode, inputs: e.target.value })
+                  }
+                  placeholder="Inputs"
+                />
+              </div>
+              
+              <div className="mb-2">
+                <label className="text-white">Number of Outputs</label>
+                <input
+                  type="number"
+                  className="p-2 mt-1 w-full"
+                  value={newNode.outputs}
+                  onChange={(e) =>
+                    setNewNode({ ...newNode, outputs: e.target.value })
+                  }
+                  placeholder="Outputs"
+                />
+              </div>
+              
+              <div className="mb-2">
+                <label className="text-white">Function</label>
+                <input
+                  type="text"
+                  className="p-2 mt-1 w-full"
+                  value={newNode.nodeFunction}
+                  onChange={(e) =>
+                    setNewNode({ ...newNode, nodeFunction: e.target.value })
+                  }
+                  placeholder="(a, b) => a + b"
+                />
+              </div>
+              
+              {error && (
+                <div className="text-red-500 text-sm mt-2">{error}</div>
+              )}
 
-      {/* Floating form to add a new node, pinned top-left */}
-      <div className="absolute top-8 left-8 bg-gray-700 p-4 rounded-md w-[200px]">
-      <button onClick={toggleMinecraftStyle} className="mt-4">
-        <img
-          src={applyMinecraftStyle ? "/lever_off.png" : "/lever_on.png"}
-          alt="Minecraft Lever"
-          className="w-30 h-30 transition-transform duration-200"
-        />
-      </button>
-        <h2 className="text-white text-lg mb-4">Add Node</h2>
-        <form onSubmit={handleAddNode}>
-          <div className="mb-2">
-            <label className="text-white">Node ID</label>
-            <input
-              type="text"
-              className="p-2 mt-1 w-full"
-              value={newNode.id}
-              onChange={(e) => setNewNode({ ...newNode, id: e.target.value })}
-              // onClick={() => leverSound.play()}
-              placeholder="Node ID"
-            />
+              <button type="submit" className="bg-blue-500 text-white py-2 px-4 mt-4 rounded">
+                Add Node
+              </button>
+            </form>
           </div>
-          {error && error.includes("Node ID") && (
-            <div className="text-red-500 text-sm mt-2">{error}</div>
-          )}
-
-          <div className="mb-2">
-            <label className="text-white">Number of Inputs</label>
-            <input
-              type="number"
-              className="p-2 mt-1 w-full"
-              value={newNode.inputs}
-              onChange={(e) =>
-                setNewNode({ ...newNode, inputs: parseInt(e.target.value) })
-              }
-              placeholder="Inputs"
-            />
-          </div>
-          <div className="mb-2">
-            <label className="text-white">Number of Outputs</label>
-            <input
-              type="number"
-              className="p-2 mt-1 w-full"
-              value={newNode.outputs}
-              onChange={(e) =>
-                setNewNode({ ...newNode, outputs: parseInt(e.target.value) })
-              }
-              placeholder="Outputs"
-            />
-          </div>
-          <div className="mb-2">
-            <label className="text-white">Function</label>
-            <input
-              type="text"
-              className="p-2 mt-1 w-full"
-              value={newNode.nodeFunction}
-              onChange={(e) =>
-                setNewNode({ ...newNode, nodeFunction: e.target.value })
-              }
-              placeholder="(a, b) => a + b"
-            />
-          </div>
-          {error && !error.includes("Node ID") && (
-            <div className="text-red-500 text-sm mt-2">{error}</div>
-          )}
-
-          <button type="submit" className="bg-blue-500 text-white py-2 px-4 mt-4 rounded">
-            Add Node
-          </button>
-        </form>
-      </div>
+        </Panel>
+      </ReactFlow>
     </div>
   );
 }

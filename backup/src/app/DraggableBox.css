@@ -10,9 +10,9 @@
 }
 
 .draggable-box.minecraft {
-    background-image: url("/block.jpg");
-    background-size: cover;
-    background-repeat: no-repeat;
+  background-image: url("/block.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .drag-handle.header {
@@ -20,14 +20,14 @@
 }
 
 .drag-handle {
-  font-family:'Monocraft', Times, serif;
+  font-family: 'Monocraft', Times, serif;
   cursor: move;
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 2rem; /* h-8 */
-  background-color: rgb(128, 128, 128, 0.5); /* bg-blue-600 */
+  background-color: rgba(128, 128, 128, 0.5); /* bg-blue-600 */
   border-top-left-radius: 1rem; /* rounded-t-2xl */
   border-top-right-radius: 1rem;
   display: flex;
@@ -42,114 +42,6 @@
   font-size: 0.875rem; /* text-sm */
 }
 
-.connection-container {
-  position: absolute;
-  top: 10%;
-  bottom: 10%;
-  display: inline-flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-}
-
-.input-container {
-  left: 0;
-  position: fixed;
-}
-
-.output-container {
-  right: 0;
-  position: fixed;
-}
-
-.connection-point-wrapper {
-  display: block;
-  position: relative;
-}
-
-.connection-point {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 0.8rem;
-  height: 0.8rem;
-
-  border-radius: 0.4rem;
-  translate: -50%;
-
-  cursor: pointer;
-  user-select: none;
-}
-
-.input-point {
-  /* margin-left: -0.4rem; */
-  /* translate: -50%; */
-  /* margin: -0.4rem; */
-  /* left: ; */
-  position: absolute;
-  background-color: white;
-}
-
-.input-point.connected {
-  background-color: crimson; /* bg-green-400 */
-  min-width: 1.6rem;
-  width: auto;
-  height: 1.6rem;
-  transform: translateY(-25%);
-  border-radius: 0.4rem;
-  box-shadow: 0 0 0 2px rgb(229, 255, 231); /* ring-2 ring-green-200 */
-}
-
-.input-point.connected:has(.value-label) {
-  background-color: rgb(74, 222, 128);
-}
-
-.output-point {
-  /* margin-right: -0.375rem; -mr-1.5 */
-  background-color: white;
-  border-radius: 0.4rem;
-  min-height: 0.8rem;
-  min-width: 0.8rem;
-  width: auto;
-  /* translate: -50%; */
-  position: absolute;
-}
-
-.output-point:has(.value-label) {
-  background-color: peachpuff; /* bg-green-400 */
-  min-width: 1.6rem;
-  width: auto;
-  height: 1.6rem;
-  transform: translateY(-25%);
-  border-radius: 0.4rem;
-  box-shadow: 0 0 0 2px goldenrod; /* ring-2 ring-green-200 */
-}
-
-.value-label {
-  display: inline-block;
-  font-family: "Cartograph CF", "Jetbrains Mono", monospace;
-  color: black;
-  font-size: 0.75rem; /* text-xs */
-  padding: 0.25rem; /* px-1 */
-  pointer-events: none; /* Make text non-clickable */
-}
-
-.value-label.external {
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  margin-left: -1.7rem;
-}
-
-.input-value {
-  left: 1rem; /* left-4 */
-}
-
-.output-value {
-  position: absolute;
-  color: black; /* Match input value color */
-}
-
 .node-content {
   margin-top: 1.5rem; /* mt-6 */
   user-select: none;
@@ -161,4 +53,45 @@
   color: white;
   overflow: auto;
   white-space: pre-wrap;
+  max-height: 7rem;
+}
+
+.value-label {
+  display: inline-block;
+  font-family: "Cartograph CF", "Jetbrains Mono", monospace;
+  color: black;
+  font-size: 0.75rem; /* text-xs */
+  padding: 0.25rem; /* px-1 */
+  pointer-events: none; /* Make text non-clickable */
+  background-color: white;
+  border-radius: 0.25rem;
+}
+
+/* React Flow specific styles */
+.react-flow__node {
+  padding: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+.react-flow__handle {
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  border: 2px solid white !important;
+}
+
+.react-flow__handle-left {
+  left: -5px !important;
+}
+
+.react-flow__handle-right {
+  right: -5px !important;
+}
+
+.react-flow__panel {
+  z-index: 10 !important;
 }
