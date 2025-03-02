@@ -2,7 +2,7 @@
 use std::{path::{Path, PathBuf}, sync::Mutex};
 
 use backend::Graph;
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
 use serde::Deserialize;
 
 
@@ -20,7 +20,7 @@ struct QueryParams {
     meta_dir: String,
 }
 
-#[get("/api/add_node")]
+#[get("/api/add-node")]
 async fn add_node(state: web::Data<AppState>, query: web::Query<QueryParams>) -> impl Responder {
     let meta_dir = &query.meta_dir;
 

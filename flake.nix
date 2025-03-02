@@ -16,6 +16,9 @@
             nodejs
             cargo
             electron
+            (python3.withPackages (p: with p; [
+              requests
+            ]))
           ];
         };
       };
