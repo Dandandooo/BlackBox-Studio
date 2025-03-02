@@ -5,3 +5,6 @@ Cargo.lock
 
 
 .direnv*
+
+node_modules
+flake.lock

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev --turbopack -p 3001",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -14,7 +14,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-draggable": "^4.4.6",
-    "react-flow-renderer": "^10.3.17"
+    "react-flow-renderer": "^10.3.17",
+    "styled-components": "^6.1.15"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

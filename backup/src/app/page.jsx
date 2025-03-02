@@ -550,7 +550,7 @@ export default function NodeEditor() {
       >
         <Controls />
         <MiniMap />
-        <Background variant={applyMinecraftStyle ? "dots" : "lines"} gap={20} size={1} />
+        <Background gap={20} variant={applyMinecraftStyle? null : "dots"} />
 
         <Panel position="top-left">
           <div className="bg-gray-700 p-4 rounded-md w-[200px] z-50">

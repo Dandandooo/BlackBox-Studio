@@ -1,6 +1,15 @@
+/*
+red: "#eb7184",
+orange: "#f38d70",
+yellow: "#f1cd7a",
+green: "#adda78",
+blue: "#6ab0f3",
+cyan: "#85dacc",
+*/
+
 .draggable-box {
   position: relative;
-  background-color: rgb(59, 130, 246); /* bg-blue-500 */
+  background-color: #6ab0f3; /* bg-blue-500 */
   width: 12rem; /* w-48 */
   height: 12rem; /* h-48 */
   color: white;
