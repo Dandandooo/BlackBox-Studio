@@ -769,7 +769,7 @@ function NodeEditor() {
   };
 
   const openFileBrowser = () => {
-    // Only open file browser if no file is selected or after file is removed
+    // Only open file browser if no file is selected
     if (!newNode.file) {
       if (applyMinecraftStyle) {
         chestOpenRef.current?.play();
@@ -778,28 +778,80 @@ function NodeEditor() {
     }
   };
 
-  const handleFile = (file) => {
-    // Store file in state
-    setNewNode({ ...newNode, file });
+  function createNodeFromJson(json) {
+    const nodeSpacingX = 200; // Horizontal spacing
+    const nodeSpacingY = 100; // Vertical spacing
 
-    // Optional: if you want to read and process the file immediately
-    // For example, read an image file and set it as a node background
-    // const reader = new FileReader();
-    // reader.onload = (e) => {
-    //   // Process file content
-    // };
-    // reader.readAsDataURL(file);
-  };
+    let maxX = 100; // Default starting X
+    let maxY = 100; // Default starting Y
 
-  // Add a new function to handle file removal
-  const handleRemoveFile = (e) => {
-    e.preventDefault(); // Prevent form submission
-    setNewNode({ ...newNode, file: null });
+    if (nodes.length > 0) {
+      maxX = Math.max(...nodes.map(node => node.position.x)) + nodeSpacingX;
 
-    // Reset the file input element itself
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+      // Find existing Y positions at maxX
+      const yPositionsAtMaxX = nodes
+        .filter(node => node.position.x === maxX - nodeSpacingX)
+        .map(node => node.position.y);
+
+      // Place the new node at a unique Y position
+      maxY = Math.max(...yPositionsAtMaxX, maxY) + nodeSpacingY;
     }
+    return {
+      id: `node_${json.id}`,
+      type: 'customNode',
+      position: { x: maxX, y: maxY },
+      data: {
+        inputs: json.inputs.length,
+        outputs: json.outputs.length,
+        inputValues: Array(json.inputs.length).fill(null),
+        inputTypes: json.inputs.map(input => input.datatype),
+        outputValues: Array(json.outputs.length).fill(null),
+        outputTypes: json.outputs.map(output => output.datatype),
+        nodeFunction: "Custom Function",
+        label: json.name,
+      },
+    };
+  }
+
+  const handleFile = (file) => {
+    // Store file in state (file is dragged and dropped)
+    // setNewNode({ ...newNode, file });
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      console.log(e.target.result);
+      try {
+        const base64String = e.target.result.split(',')[1]; // Extract base64 content from data URL
+        const jsonString = atob(base64String); // Decode base64
+        const json = JSON.parse(jsonString); // Parse JSON data
+        console.log(json)
+
+        // Validate the JSON structure (simple example, modify as needed)
+        if (json.inputs && json.outputs && json.name) {
+          const apiUrl = `http://localhost:8000/api/add-node?meta_dir=${json.location}`;
+          fetch(apiUrl, {
+            method: 'GET',
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log('API Response:', data);
+              const newNode = createNodeFromJson(data);
+              console.log(newNode)
+              setNodes(prev => [...prev, newNode]);
+
+              // setNewNode({ ...newNode});
+              setNeedsUpdate(true);
+            })
+            .catch((error) => console.error('API Error:', error));
+        } else {
+          console.error('Invalid node file structure');
+        }
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+      }
+    };
+
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -866,21 +918,42 @@ function NodeEditor() {
         />
 
 
-        <Background
-          gap={20}
-          variant={applyMinecraftStyle? null : "dots"}
-          style={{
-            backgroundImage: applyMinecraftStyle ? 'url("/dirt.jpg")' : 'none',
-            backgroundColor: applyMinecraftStyle ? 'transparent' : '#2C2525',
-            backgroundSize: '100px 100px',
-            // backgroundBlendMode: "multiply",
-            // backgroundRepeat: "
-          }}
-        />
+        <Background gap={20} variant={applyMinecraftStyle? null : "dots"} />
+        <Panel position="top-right">
+          <div className="add-menu">
+            {/* File drop area */}
+            <div
+              className={`file-drop-area ${isDragging ? 'active' : ''}`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onClick={newNode.file ? null : openFileBrowser} // Only open file browser if no file is selected
+            >
+              <div className="file-drop-text">
+                {!newNode.file ? (
+                  <>
+                    <div>Drag & drop a file here</div>
+                    <div>or click to browse</div>
+                  </>
+                ) : (
+                  <>
+                    <div>File selected:</div>
+                    <div className="file-name">{newNode.file.name}</div>
+                  </>
+                )}
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                style={{ display: 'none' }}
+                onChange={handleFileInputChange}
+              />
+            </div>
+          </div>
+        </Panel>
 
         <Panel position="top-left">
           <div className="add-menu">
-
             <h2 className="text-white text-lg mb-4">Add Node</h2>
             <form onSubmit={handleAddNode}>
               <input
@@ -940,35 +1013,6 @@ function NodeEditor() {
                 </div>
               </div>
 
-              {/* File drop area */}
-              <div
-                className={`file-drop-area ${isDragging ? 'active' : ''}`}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={newNode.file ? null : openFileBrowser} // Only open file browser if no file is selected
-              >
-                <div className="file-drop-text">
-                  {!newNode.file ? (
-                    <>
-                      <div>Drag & drop a file here</div>
-                      <div>or click to browse</div>
-                    </>
-                  ) : (
-                    <>
-                      <div>File selected:</div>
-                      <div className="file-name">{newNode.file.name}</div>
-                    </>
-                  )}
-                </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  style={{ display: 'none' }}
-                  onChange={handleFileInputChange}
-                />
-              </div>
-
               {/* Button container for better layout */}
               <div className="button-container">
                 <button
@@ -977,17 +1021,6 @@ function NodeEditor() {
                 >
                   Add
                 </button>
-
-                {/* Only show remove button when a file is selected */}
-                {newNode.file && (
-                  <button
-                    type="button"
-                    className="remove-button"
-                    onClick={handleRemoveFile}
-                  >
-                    Remove
-                  </button>
-                )}
               </div>
             </form>
             {error && <p className="text-red-500 mt-2">{error}</p>}

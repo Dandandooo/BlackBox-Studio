@@ -116,7 +116,6 @@ function CustomNode({ id, data }) {
               style={{
                 position: 'relative',
                 height: `${100 / Math.max(inputs, 1)}%`,
-                // width: '20px'
               }}
             >
               {!(hasValue && !isNaN) && (<span
@@ -149,8 +148,7 @@ function CustomNode({ id, data }) {
       {/* Outputs on right side */}
       <div style={{ position: 'absolute', top: '25%', bottom: '25%', right: 0, zIndex: 2 }}>
         {Array.from({ length: outputs }).map((_, i) => {
-          const hasValue = outputValues[i] !== undefined;
-          const isNaN = hasValue && Number.isNaN(outputValues[i]);
+          const hasValidOutputValue = outputValues[i] !== undefined && outputValues[i] !== null && !Number.isNaN(outputValues[i]);
           const outputType = outputTypes[i] || 'Any';
 
           return (
@@ -159,7 +157,6 @@ function CustomNode({ id, data }) {
               style={{
                 position: 'relative',
                 height: `${100 / Math.max(outputs, 1)}%`,
-                // width: '20px'
               }}
             >
               <span
@@ -175,10 +172,10 @@ function CustomNode({ id, data }) {
                 type="source"
                 position={Position.Right}
                 id={`output-${i}`}
-                style={{ background: hasValue && !isNaN ? 'green' : 'red', }}
+                style={{ background: hasValidOutputValue ? 'green' : 'red', }}
               >
               {/* Type indicator */}
-              {hasValue && !isNaN && (
+              {hasValidOutputValue && (
                 <span className={`value-label ${minecraftStyle ? 'minecraft-text' : ''}`} >
                   {outputValues[i]}
                 </span>
