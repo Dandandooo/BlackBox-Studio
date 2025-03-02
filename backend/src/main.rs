@@ -1,5 +1,6 @@
 
 use std::{path::{Path, PathBuf}, sync::Mutex};
+use actix_cors::Cors;
 
 use backend::Graph;
 use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
@@ -44,8 +45,15 @@ async fn main() -> std::io::Result<()> {
     });
 
     HttpServer::new(move || {
+        let cors = Cors::default()
+            .allow_any_origin() // Allows requests from any origin
+            .allow_any_method() // Allows any HTTP method (GET, POST, etc.)
+            .allow_any_header() // Allows any headers
+            .max_age(3600); // Cache preflight response for 1 hour
+
         App::new()
             .app_data(state.clone())
+            .wrap(cors)
             .service(serve)
             .service(add_node)
     })
