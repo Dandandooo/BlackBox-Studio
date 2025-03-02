@@ -8,13 +8,16 @@ cyan: "#85dacc",
 */
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
+@font-face {
+  font-family: 'Monocraft';
+  src: url('/Monocraft.ttc') format('truetype');
+}
+
 .minecraft-text {
-  font-family: '/Monocraft.ttc' cursive !important;
+  font-family: Monocraft !important;
   font-size: 10px !important;
   letter-spacing: 1px;
 }
-
-
 
 .draggable-box {
   font-family: 'CaskaydiaCove Nerd Font', monospace;
@@ -153,7 +156,7 @@ cyan: "#85dacc",
   border: 2px solid #a86145;
 }
 
-.add-menu.field {
-  background-color: black;
+.add-menu input {
+  background-color: #a86145;
 
 }
