@@ -14,13 +14,13 @@ function CustomNode({ id, data }) {
     label,
     minecraftStyle = false
   } = data;
-  
+
   const isLampNode = outputs === 0;
   const hasAllInputsConnected =
   inputs > 0 &&
   inputValues.length === inputs &&
   inputValues.every(val => val !== undefined && !Number.isNaN(val));
-  
+
   const nodeBackgroundImage = minecraftStyle
     ? isLampNode
       ? hasAllInputsConnected
@@ -30,13 +30,22 @@ function CustomNode({ id, data }) {
       ? 'url("/redstone_block.png")'
       : 'url("/command_block.png")'
     : 'none';
-  
+
   const backgroundImage =
     minecraftStyle && inputs === 0
       ? 'url("/redstone_block.png")'
       : minecraftStyle
       ? 'url("/command_block.png")'
       : 'none';
+
+  // Helper function to truncate with ellipsis
+  const truncateWithEllipsis = (value, maxLength = 5) => {
+    const stringValue = value.toString();
+    if (stringValue.length <= maxLength) {
+      return stringValue;
+    }
+    return `${stringValue.substring(0, maxLength)}...`;
+  };
 
   return (
     <div
@@ -90,11 +99,12 @@ function CustomNode({ id, data }) {
                     top: '50%',
                     transform: 'translateY(-50%)',
                     backgroundColor: 'rgba(0, 128, 0, 1)',
+                    color: 'white',
                     padding: '2px 4px',
                     borderRadius: '4px'
                   }}
                 >
-                  {inputValues[i].toString().slice(0, 5)}
+                  {truncateWithEllipsis(inputValues[i], 8)}
                 </span>
               )}
             </div>
@@ -137,10 +147,11 @@ function CustomNode({ id, data }) {
                     transform: 'translateY(-50%)',
                     backgroundColor: 'rgba(0, 128, 0, 1)',
                     padding: '2px 4px',
-                    borderRadius: '4px'
+                    borderRadius: '4px',
+                    color: 'white'
                   }}
                 >
-                  {outputValues[i].toString().slice(0, 5)}
+                  {truncateWithEllipsis(outputValues[i], 8)}
                 </span>
               )}
             </div>
