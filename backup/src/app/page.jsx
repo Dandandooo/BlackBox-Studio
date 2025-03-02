@@ -149,7 +149,7 @@ function NodeEditor() {
     leverOffRef.current = new Audio("https://storage.googleapis.com/soundboards/Games/MINECRAFT/MP3/NO4%20-%20AUDIO%20FROM%20JAYUZUMI.COM.mp3");
     anvilUseRef.current = new Audio("/anvil_use.wav");
     chestOpenRef.current = new Audio("/chestopen.wav");
-    
+
 
   }, []);
 
@@ -557,7 +557,7 @@ function NodeEditor() {
     setNodes(prev => [...prev, newNodeObj]);
     if (applyMinecraftStyle) {
       anvilUseRef.current?.play();
-    }    
+    }
     setNewNode({ id: "", inputs: 0, outputs: 1, nodeFunction: "" });
     setNeedsUpdate(true);
   };
@@ -653,7 +653,7 @@ function NodeEditor() {
             nodeFunction: (a, b) => Math.log(a) / Math.log(b),
             minecraftStyle: applyMinecraftStyle,
           },
-        }, 
+        },
         "out" : {
           id: getId(),
           type: 'customNode',

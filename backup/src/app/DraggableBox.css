@@ -90,15 +90,19 @@ cyan: "#85dacc",
 }
 
 .value-label {
-  display: inline-block;
   font-family: "Cartograph CF", "Jetbrains Mono", monospace;
-  color: black;
+  color: white;
   font-size: 0.75rem; /* text-xs */
-  padding: 0.25rem; /* px-1 */
+  padding-top: 0.25rem;
+  /* padding-inline: 0.5rem; */
   pointer-events: none; /* Make text non-clickable */
-  background-color: white;
-  border-radius: 0.25rem;
-  overflow: ellipsis;
+  justify-content: center;
+  /* vertical-align: middle; */
+  height: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  /* width: 100%; */
 }
 
 /* React Flow specific styles */
@@ -116,20 +120,35 @@ cyan: "#85dacc",
 }
 
 .react-flow__handle {
-  width: 10px !important;
-  height: 10px !important;
-  border-radius: 50% !important;
+  width: 15px;
+  height: 15px;
+  border-radius: 7.5px;
   border: 2px solid white !important;
+  display: flex;
+}
+
+.react-flow__handle:has(.value-label) {
+  display: flexbox;
+  min-width: 30px;
+  max-width: 60px;
+  height: 30px;
+  justify-content: center;
+  align-items: center;
+  /* vertical-align: middle; */
+
+  /* overflow:  */
+  text-overflow: ellipsis;
+  /* white-space: nowrap; */
 }
 
 
 .react-flow__panel {
-  z-index: 10 !important;
+  z-index: 10;
 }
 
 .react-flow__controls-button {
-  border: 2px solid !important;
-  border-color: #a86145 !important;
+  border: 2px solid;
+  border-color: #a86145;
   border-radius: 0.5rem;
   background-color: #f38d70;
   color: white;

@@ -77,36 +77,21 @@ function CustomNode({ id, data }) {
               style={{
                 position: 'relative',
                 height: `${100 / Math.max(inputs, 1)}%`,
-                width: '20px'
+                // width: '20px'
               }}
             >
               <Handle
                 type="target"
                 position={Position.Left}
                 id={`input-${i}`}
-                style={{
-                  width: '10px',
-                  height: '10px',
-                  background: isNaN ? 'red' : (isConnected ? 'green' : 'white')
-                }}
-              />
+                style={{ background: isNaN ? 'red' : (isConnected ? 'green' : 'white') }}
+              >
               {hasValue && !isNaN && (
-                <span
-                  className={`value-label ${minecraftStyle ? 'minecraft-text' : ''}`}
-                  style={{
-                    position: 'absolute',
-                    left: '4px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    backgroundColor: 'rgba(0, 128, 0, 1)',
-                    color: 'white',
-                    padding: '2px 4px',
-                    borderRadius: '4px'
-                  }}
-                >
-                  {truncateWithEllipsis(inputValues[i], 8)}
+                <span className={`value-label ${minecraftStyle ? 'minecraft-text' : ''}`} >
+                  {inputValues[i]}
                 </span>
               )}
+              </Handle>
             </div>
           );
         })}
@@ -124,36 +109,21 @@ function CustomNode({ id, data }) {
               style={{
                 position: 'relative',
                 height: `${100 / Math.max(outputs, 1)}%`,
-                width: '20px'
+                // width: '20px'
               }}
             >
               <Handle
                 type="source"
                 position={Position.Right}
                 id={`output-${i}`}
-                style={{
-                  width: '10px',
-                  height: '10px',
-                  background: hasValue && !isNaN ? 'green' : 'red'
-                }}
-              />
+                style={{ background: hasValue && !isNaN ? 'green' : 'red' }}
+              >
               {hasValue && !isNaN && (
-                <span
-                  className={`value-label ${minecraftStyle ? 'minecraft-text' : ''}`}
-                  style={{
-                    position: 'absolute',
-                    right: '4px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    backgroundColor: 'rgba(0, 128, 0, 1)',
-                    padding: '2px 4px',
-                    borderRadius: '4px',
-                    color: 'white'
-                  }}
-                >
-                  {truncateWithEllipsis(outputValues[i], 8)}
+                <span className={`value-label ${minecraftStyle ? 'minecraft-text' : ''}`} >
+                  {outputValues[i]}
                 </span>
               )}
+              </Handle>
             </div>
           );
         })}
