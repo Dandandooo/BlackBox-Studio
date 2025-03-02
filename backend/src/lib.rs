@@ -118,6 +118,7 @@ impl Graph {
 
         if new_node.inputs.is_empty() {
             self.propogate(id)?;
+            print!("salskdfjalksdjf");
         }
 
         self.nodes[id] = Some(new_node);
@@ -205,8 +206,11 @@ impl Graph {
             let node = &self.nodes[front].as_ref().unwrap();
 
             if node.inputs.len() == 0 {
+                let fun_call = (node.behavior)(&vec![]);
+                print!("{:?}", fun_call);
+
                     outputs.iter_mut()
-                        .zip((node.behavior)(&vec![])?.into_iter())
+                        .zip(fun_call?.into_iter())
                         .for_each(|(old, new)| old.value = Some(new));
             } else {
                 match node.inputs.iter().map(|port| port.value.clone()).collect::<Option<Vec<_>>>() {

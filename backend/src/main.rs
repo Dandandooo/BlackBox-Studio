@@ -16,8 +16,8 @@ fn serialize_propagation(graph: &Graph, vals: &Vec<usize>) -> Value{
     let list = vals.iter()
                     .filter_map(|id| graph.nodes[*id].as_ref())
                     .map(|node| json!({
-                        "inputs":  node.inputs.iter().map(|i| if let Some(s) = i.value.clone() {s} else {"{}".to_string()}).collect::<Vec<_>>(),
-                        "outputs": node.outputs.iter().map(|i| if let Some(s) = i.value.clone() {s} else {"{}".to_string()}).collect::<Vec<_>>(),
+                        "inputs":  node.inputs,
+                        "outputs": node.outputs
                     })).collect();
     Value::Array(list)
 }
