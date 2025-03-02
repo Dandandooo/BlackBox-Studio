@@ -825,7 +825,7 @@ function NodeEditor() {
         const jsonString = atob(base64String); // Decode base64
         const json = JSON.parse(jsonString); // Parse JSON data
         console.log(json)
-        
+
         // Validate the JSON structure (simple example, modify as needed)
         if (json.inputs && json.outputs && json.name) {
           const apiUrl = `http://localhost:8000/api/add-node?meta_dir=${json.location}`;
@@ -838,7 +838,7 @@ function NodeEditor() {
               const newNode = createNodeFromJson(data);
               console.log(newNode)
               setNodes(prev => [...prev, newNode]);
-              
+
               // setNewNode({ ...newNode});
               setNeedsUpdate(true);
             })
@@ -862,7 +862,7 @@ function NodeEditor() {
         backgroundImage: applyMinecraftStyle
           ? 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("/dirt.jpg")'
           : 'none',
-        backgroundColor: applyMinecraftStyle ? 'transparent' : '#333',
+        backgroundColor: applyMinecraftStyle ? 'transparent' : '#2C2525',
         backgroundBlendMode: "multiply",
         backgroundRepeat: "repeat",
         backgroundSize: "100px 100px",

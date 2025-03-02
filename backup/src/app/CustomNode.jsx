@@ -60,6 +60,24 @@ function CustomNode({ id, data }) {
     return typeColors[type] || '#999999';
   };
 
+  // Format function display to be more readable
+  const formatFunctionDisplay = () => {
+    if (isLampNode) {
+      // For output nodes, show the input value instead of the function
+      if (hasAllInputsConnected && inputValues[0] !== undefined) {
+        return `Output: ${inputValues[0]}`;
+      }
+      return "Waiting for input...";
+    }
+
+    if (!nodeFunction) return "No function defined";
+
+    const funcStr = nodeFunction.toString();
+    // Remove function boilerplate to just show the operation
+    const simplifiedFunc = funcStr.replace(/\(.*\)\s*=>\s*/, '');
+    return simplifiedFunc;
+  };
+
   return (
     <div
       className={`draggable-box ${minecraftStyle ? 'minecraft' : ''}`}
@@ -70,7 +88,14 @@ function CustomNode({ id, data }) {
         imageRendering: 'pixelated'
       }}
     >
-      {/* Header Section with Text */}
+      {/* Node Content - Centered function display (now covers entire box) */}
+      <div className="node-content">
+        <div className={`function-display ${minecraftStyle ? 'minecraft-text' : ''}`}>
+          {formatFunctionDisplay()}
+        </div>
+      </div>
+
+      {/* Header Section with Text (moved after node-content to ensure proper z-index stacking) */}
       <div className={`drag-handle ${minecraftStyle ? 'header minecraft-text' : ''}`}>
         <h3 className="drag-handle-title">
           {label}
@@ -78,7 +103,7 @@ function CustomNode({ id, data }) {
       </div>
 
       {/* Inputs on left side */}
-      <div style={{ position: 'absolute', top: '25%', bottom: '25%', left: 0 }}>
+      <div style={{ position: 'absolute', top: '25%', bottom: '25%', left: 0, zIndex: 2 }}>
         {Array.from({ length: inputs }).map((_, i) => {
           const hasValue = inputValues[i] !== undefined;
           const isNaN = hasValue && Number.isNaN(inputValues[i]);
@@ -108,8 +133,8 @@ function CustomNode({ id, data }) {
                 id={`input-${i}`}
                 style={{ background: isNaN ? 'red' : (isConnected ? 'green' : 'white'), }}
               >
-              {/* Type indicator */}
-              {hasValue && !isNaN && (
+              {/* Only show the value label on the handle if this is NOT an output node */}
+              {hasValue && !isNaN && !isLampNode && (
                 <span className={`value-label ${minecraftStyle ? 'minecraft-text' : ''}`} >
                   {inputValues[i]}
                 </span>
@@ -121,7 +146,7 @@ function CustomNode({ id, data }) {
       </div>
 
       {/* Outputs on right side */}
-      <div style={{ position: 'absolute', top: '25%', bottom: '25%', right: 0 }}>
+      <div style={{ position: 'absolute', top: '25%', bottom: '25%', right: 0, zIndex: 2 }}>
         {Array.from({ length: outputs }).map((_, i) => {
           const hasValidOutputValue = outputValues[i] !== undefined && outputValues[i] !== null && !Number.isNaN(outputValues[i]);
           const outputType = outputTypes[i] || 'Any';
@@ -159,13 +184,6 @@ function CustomNode({ id, data }) {
             </div>
           );
         })}
-      </div>
-
-      {/* Node Content */}
-      <div className="node-content">
-        <div className={`function-display ${minecraftStyle ? 'minecraft-text' : ''}`}>
-          {isLampNode ? "" : nodeFunction ? nodeFunction.toString() : "No function defined"}
-        </div>
       </div>
     </div>
   );
