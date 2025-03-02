@@ -6,6 +6,7 @@ import {
   addEdge,
   Background,
   Controls,
+  ControlButton,
   MiniMap,
   useNodesState,
   useEdgesState,
@@ -549,19 +550,19 @@ export default function NodeEditor() {
         panOnScroll={true}
         fitView
       >
-        <Controls />
+        <Controls>
+            <ControlButton onClick={toggleMinecraftStyle}>
+              <img
+                src={applyMinecraftStyle ? "/lever_off.png" : "/lever_on.png"}
+                alt="Minecraft Lever"
+              />
+            </ControlButton>
+        </Controls>
         <MiniMap />
         <Background gap={20} variant={applyMinecraftStyle? null : "dots"} />
 
         <Panel position="top-left">
           <div className="bg-gray-700 p-4 rounded-md w-[200px] z-50">
-            <button onClick={toggleMinecraftStyle} className="mt-1 mb-4">
-              <img
-                src={applyMinecraftStyle ? "/lever_off.png" : "/lever_on.png"}
-                alt="Minecraft Lever"
-                className="w-20 h-auto transition-transform duration-200"
-              />
-            </button>
 
             <h2 className="text-white text-lg mb-4">Add Node</h2>
             <form onSubmit={handleAddNode}>
