@@ -79,6 +79,19 @@ export default function NodeEditor() {
       }
     },
     {
+      id: 'output',
+      type: 'customNode',
+      position: { x: 400, y: 500 },
+      data: {
+        inputs: 1,
+        outputs: 0,
+        inputValues: [],
+        outputValues: [],
+        nodeFunction: (a, b) => "",
+        label: 'output'
+      }
+    },
+    {
       id: 'div',
       type: 'customNode',
       position: { x: 900, y: 0 },
