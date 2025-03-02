@@ -1,0 +1,9 @@
+{
+    "name": "constant5",
+    "language": "python",
+    "run": "python ./constant5.py",
+    "inputs": [],
+    "outputs": [
+        {"value": "int"}
+    ]
+}
