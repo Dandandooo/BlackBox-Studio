@@ -810,7 +810,7 @@ function NodeEditor() {
         backgroundImage: applyMinecraftStyle
           ? 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("/dirt.jpg")'
           : 'none',
-        backgroundColor: applyMinecraftStyle ? 'transparent' : '#333',
+        backgroundColor: applyMinecraftStyle ? 'transparent' : '#2C2525',
         backgroundBlendMode: "multiply",
         backgroundRepeat: "repeat",
         backgroundSize: "100px 100px",
@@ -866,7 +866,17 @@ function NodeEditor() {
         />
 
 
-        <Background gap={20} variant={applyMinecraftStyle? null : "dots"} />
+        <Background
+          gap={20}
+          variant={applyMinecraftStyle? null : "dots"}
+          style={{
+            backgroundImage: applyMinecraftStyle ? 'url("/dirt.jpg")' : 'none',
+            backgroundColor: applyMinecraftStyle ? 'transparent' : '#2C2525',
+            backgroundSize: '100px 100px',
+            // backgroundBlendMode: "multiply",
+            // backgroundRepeat: "
+          }}
+        />
 
         <Panel position="top-left">
           <div className="add-menu">
