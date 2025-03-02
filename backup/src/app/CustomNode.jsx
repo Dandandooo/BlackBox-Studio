@@ -27,8 +27,8 @@ function CustomNode({ id, data }) {
         ? 'url("/redstone_lamp_on.png")'
         : 'url("/redstone_lamp_off.png")'
       : inputs === 0
-      ? 'url("/redblock.jpg")'
-      : 'url("/block.jpg")'
+      ? 'url("/redstone_block.png")'
+      : 'url("/command_block.png")'
     : 'none';
   
   const backgroundImage =
