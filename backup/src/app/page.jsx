@@ -558,7 +558,26 @@ export default function NodeEditor() {
               />
             </ControlButton>
         </Controls>
-        <MiniMap />
+        <MiniMap
+          nodeColor={(node) => {
+            if (applyMinecraftStyle) {
+              return node.data.inputs === 0 ? 'red' : '#8B5A2B'; // red for redblock nodes, brown for others
+            }
+            return '#fff'; // default color when not in Minecraft mode
+          }}
+          style={{
+            backgroundImage: applyMinecraftStyle ? 'url(/white_glass.png)' : 'none',
+            backgroundSize: '50px 50px',
+            backgroundRepeat: 'repeat',
+            borderRadius: '4px',
+            border: applyMinecraftStyle ? '2px solid #000' : 'none',
+          }}
+          maskColor="rgba(0, 0, 0, 0.2)"
+          zoomable
+          pannable
+        />
+
+
         <Background gap={20} variant={applyMinecraftStyle? null : "dots"} />
 
         <Panel position="top-left">

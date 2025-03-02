@@ -13,15 +13,27 @@ function CustomNode({ id, data }) {
     minecraftStyle = false 
   } = data;
 
+  const backgroundImage =
+    minecraftStyle && inputs === 0
+      ? 'url("/redblock.jpg")'
+      : minecraftStyle
+      ? 'url("/block.jpg")'
+      : 'none';
+
   return (
-    <div className={`draggable-box ${minecraftStyle ? 'minecraft' : ''}`}>
-      {/* Header Section with Text */}
-      <div className={`drag-handle ${minecraftStyle ? 'header' : ''}`}>
-          <h3
-      className={`drag-handle-title ${minecraftStyle ? 'minecraft-font' : ''}`}
+    <div
+      className={`draggable-box ${minecraftStyle ? 'minecraft' : ''}`}
+      style={{
+        backgroundImage,
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+      }}
     >
-      {label}
-    </h3>
+      {/* Header Section with Text */}
+      <div className={`drag-handle ${minecraftStyle ? 'header minecraft-text' : ''}`}>
+        <h3 className="drag-handle-title">
+          {label}
+        </h3>
       </div>
 
       {/* Inputs on left side */}
@@ -52,7 +64,7 @@ function CustomNode({ id, data }) {
               />
               {hasValue && !isNaN && (
                 <span 
-                  className="value-label" 
+                  className={`value-label ${minecraftStyle ? 'minecraft-text' : ''}`}
                   style={{ 
                     position: 'absolute', 
                     left: '4px', 
@@ -98,7 +110,7 @@ function CustomNode({ id, data }) {
               />
               {hasValue && !isNaN && (
                 <span 
-                  className="value-label" 
+                  className={`value-label ${minecraftStyle ? 'minecraft-text' : ''}`}
                   style={{ 
                     position: 'absolute', 
                     right: '4px', 
@@ -119,7 +131,7 @@ function CustomNode({ id, data }) {
 
       {/* Node Content */}
       <div className="node-content">
-        <div className="function-display">
+        <div className={`function-display ${minecraftStyle ? 'minecraft-text' : ''}`}>
           {nodeFunction ? nodeFunction.toString() : "No function defined"}
         </div>
       </div>
