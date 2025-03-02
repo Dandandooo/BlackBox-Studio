@@ -22,6 +22,7 @@ cyan: "#85dacc",
 
 
 .draggable-box {
+  font-family: 'CaskaydiaCove Nerd Font', monospace;
   position: relative;
   background-color: #6ab0f3; /* bg-blue-500 */
   width: 12rem; /* w-48 */
@@ -29,21 +30,24 @@ cyan: "#85dacc",
   color: white;
   padding: 1rem; /* p-4 */
   border-radius: 1rem; /* rounded-2xl */
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+  /* overflow: hidden; */
+  /* box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); */
 }
 
 .draggable-box.minecraft {
   background-image: url("/block.jpg");
   background-size: cover;
   background-repeat: no-repeat;
+  font-family: Monocraft !important;
 }
 
 .drag-handle.header {
   opacity: 0.5 !important;
+  font-weight: 800;
 }
 
 .drag-handle {
-  font-family: 'Monocraft', Times, serif;
+  font-weight: 800;
   cursor: move;
   position: absolute;
   top: 0;
@@ -51,8 +55,7 @@ cyan: "#85dacc",
   right: 0;
   height: 2rem; /* h-8 */
   background-color: rgba(128, 128, 128, 0.5); /* bg-blue-600 */
-  border-top-left-radius: 1rem; /* rounded-t-2xl */
-  border-top-right-radius: 1rem;
+  border-radius: 1rem 1rem 0 0; /* rounded-t-xl */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -93,11 +96,15 @@ cyan: "#85dacc",
 /* React Flow specific styles */
 .react-flow__node {
   padding: 0 !important;
-  border-radius: 0 !important;
+  /* border-radius: 0 !important; */
   background: transparent !important;
   border: none !important;
   width: auto !important;
   height: auto !important;
+}
+
+.react-flow__node.selected {
+  border: 2px solid #6ab0f3;
 }
 
 .react-flow__handle {
@@ -107,14 +114,40 @@ cyan: "#85dacc",
   border: 2px solid white !important;
 }
 
-.react-flow__handle-left {
-  left: -5px !important;
-}
-
-.react-flow__handle-right {
-  right: -5px !important;
-}
 
 .react-flow__panel {
   z-index: 10 !important;
+}
+
+.react-flow__controls-button {
+  border: 2px solid !important;
+  border-color: #a86145 !important;
+  border-radius: 0.5rem;
+  background-color: #f38d70;
+  color: white;
+
+  margin: .1rem;
+}
+
+.react-flow__controls-button:hover {
+  background-color: #f38d70;
+  filter: brightness(0.9);
+}
+
+.react-flow__controls{
+  box-shadow: none;
+}
+
+.react-flow__minimap {
+  background-color: #2C2525;
+  border-radius: 0.5rem;
+  border: 2px solid black;
+  overflow: hidden;
+}
+.react-flow__minimap-mask {
+  fill: #111111;
+  fill-opacity: 0.5;
+}
+.react-flow__minimap-node {
+  fill: #6ab0f3;
 }
