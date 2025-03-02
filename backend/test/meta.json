@@ -1,0 +1,12 @@
+{
+    "name": "foobar",
+    "language": "python",
+    "run": "python ./foo.py",
+    "inputs" : [
+        {"x": "float"},
+        {"y": "float"}
+    ],
+    "outputs" : [
+        {"sum": "float"}
+    ]
+}
