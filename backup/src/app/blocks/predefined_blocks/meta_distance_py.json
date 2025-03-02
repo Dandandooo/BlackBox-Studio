@@ -1,0 +1,14 @@
+{
+    "name": "distance_between_points",
+    "language": "python",
+    "run": "python ./distance.py",
+    "inputs": [
+        {"x1": "float"},
+        {"y1": "float"},
+        {"x2": "float"},
+        {"y2": "float"}
+    ],
+    "outputs": [
+        {"distance": "float"}
+    ]
+}

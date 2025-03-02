@@ -1,0 +1,14 @@
+{
+    "name": "quadratic_roots",
+    "language": "python",
+    "run": "python ./quadratic_roots.py",
+    "inputs": [
+        {"a": "float"},
+        {"b": "float"},
+        {"c": "float"}
+    ],
+    "outputs": [
+        {"root1": "float"},
+        {"root2": "float"}
+    ]
+}

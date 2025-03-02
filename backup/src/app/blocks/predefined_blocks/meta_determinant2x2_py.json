@@ -1,0 +1,14 @@
+{
+    "name": "determinant2x2",
+    "language": "python",
+    "run": "python ./determinant2x2.py",
+    "inputs": [
+        {"a": "float"},
+        {"b": "float"},
+        {"c": "float"},
+        {"d": "float"}
+    ],
+    "outputs": [
+        {"determinant": "float"}
+    ]
+}

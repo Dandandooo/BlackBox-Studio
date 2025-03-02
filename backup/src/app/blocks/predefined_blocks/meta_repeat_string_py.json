@@ -1,0 +1,12 @@
+{
+    "name": "repeat_string",
+    "language": "python",
+    "run": "python ./repeat_string.py",
+    "inputs": [
+        {"text": "string"},
+        {"times": "int"}
+    ],
+    "outputs": [
+        {"result": "string"}
+    ]
+}
