@@ -781,6 +781,9 @@ function NodeEditor() {
 
       const newNode = nodeTypes[type]
 
+      if (applyMinecraftStyle) {
+        anvilUseRef.current?.play();
+      }
       setNodes((nds) => nds.concat(newNode));
     },
     [screenToFlowPosition, type],
