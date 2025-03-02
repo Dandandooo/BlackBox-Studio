@@ -14,6 +14,11 @@
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             nodejs
+            cargo
+            electron
+            (python3.withPackages (p: with p; [
+              requests
+            ]))
           ];
         };
       };

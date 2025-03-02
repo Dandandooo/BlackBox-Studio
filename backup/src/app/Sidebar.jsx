@@ -47,6 +47,13 @@ export default () => {
         >
           log
         </div>
+        <div
+          className="dndnode w-16 h-16 bg-teal-500 hover:bg-teal-600 border-2 border-gray-600 rounded-lg flex items-center justify-center text-gray-600 text-lg font-bold cursor-pointer shadow-md"
+          onDragStart={(event) => onDragStart(event, 'out')}
+          draggable
+        >
+          out
+        </div>
       </div>
     </aside>
   );

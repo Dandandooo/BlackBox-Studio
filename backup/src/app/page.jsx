@@ -72,7 +72,7 @@ function NodeEditor() {
         inputValues: [],
         outputValues: [],
         nodeFunction: (a, b) => a + b,
-        label: 'add'
+        label: 'Add'
       }
     },
     {
@@ -85,7 +85,7 @@ function NodeEditor() {
         inputValues: [],
         outputValues: [],
         nodeFunction: (a, b) => a * b,
-        label: 'mult'
+        label: 'Mult'
       }
     },
     {
@@ -98,7 +98,7 @@ function NodeEditor() {
         inputValues: [],
         outputValues: [],
         nodeFunction: (a, b) => "",
-        label: 'output'
+        label: 'Out'
       }
     },
     {
@@ -111,7 +111,7 @@ function NodeEditor() {
         inputValues: [],
         outputValues: [],
         nodeFunction: (a, b) => a / b,
-        label: 'div'
+        label: 'Div'
       }
     },
     {
@@ -124,7 +124,7 @@ function NodeEditor() {
         inputValues: [],
         outputValues: [],
         nodeFunction: (a, b) => a - b,
-        label: 'sub'
+        label: 'Sub'
       }
     },
   ];
@@ -139,11 +139,18 @@ function NodeEditor() {
   // Audio references
   const leverOnRef = useRef(null);
   const leverOffRef = useRef(null);
+  const anvilUseRef = useRef(null);
+  const chestOpenRef = useRef(null);
+
 
   // Initialize audio on component mount
   useEffect(() => {
     leverOnRef.current = new Audio("https://storage.googleapis.com/soundboards/Games/MINECRAFT/MP3/LEVELUP%20-%20AUDIO%20FROM%20JAYUZUMI.COM.mp3");
     leverOffRef.current = new Audio("https://storage.googleapis.com/soundboards/Games/MINECRAFT/MP3/NO4%20-%20AUDIO%20FROM%20JAYUZUMI.COM.mp3");
+    anvilUseRef.current = new Audio("/anvil_use.wav");
+    chestOpenRef.current = new Audio("/chestopen.wav");
+    
+
   }, []);
 
   // Form state for adding new nodes
@@ -548,6 +555,9 @@ function NodeEditor() {
     };
 
     setNodes(prev => [...prev, newNodeObj]);
+    if (applyMinecraftStyle) {
+      anvilUseRef.current?.play();
+    }    
     setNewNode({ id: "", inputs: 0, outputs: 1, nodeFunction: "" });
     setNeedsUpdate(true);
   };
@@ -579,7 +589,7 @@ function NodeEditor() {
           type: 'customNode', // Set the type to 'customNode' (same as your 'add' node)
           position,
           data: {
-            label: 'Add Node', // You can customize this based on the type
+            label: 'Add', // You can customize this based on the type
             inputs: 2, // Default inputs for the 'add' node
             outputs: 1, // Default outputs for the 'add' node
             inputValues: [],
@@ -593,7 +603,7 @@ function NodeEditor() {
           type: 'customNode', // Set the type to 'customNode' (same as your 'add' node)
           position,
           data: {
-            label: 'Sub Node', // You can customize this based on the type
+            label: 'Sub', // You can customize this based on the type
             inputs: 2, // Default inputs for the 'add' node
             outputs: 1, // Default outputs for the 'add' node
             inputValues: [],
@@ -607,7 +617,7 @@ function NodeEditor() {
           type: 'customNode', // Set the type to 'customNode' (same as your 'add' node)
           position,
           data: {
-            label: 'Mult Node', // You can customize this based on the type
+            label: 'Mult', // You can customize this based on the type
             inputs: 2, // Default inputs for the 'add' node
             outputs: 1, // Default outputs for the 'add' node
             inputValues: [],
@@ -621,7 +631,7 @@ function NodeEditor() {
           type: 'customNode', // Set the type to 'customNode' (same as your 'add' node)
           position,
           data: {
-            label: 'Div Node', // You can customize this based on the type
+            label: 'Div', // You can customize this based on the type
             inputs: 2, // Default inputs for the 'add' node
             outputs: 1, // Default outputs for the 'add' node
             inputValues: [],
@@ -635,12 +645,26 @@ function NodeEditor() {
           type: 'customNode',
           position,
           data: {
-            label: 'Log Node',
+            label: 'Log',
             inputs: 2,
             outputs: 1,
             inputValues: [],
             outputValues: [],
             nodeFunction: (a, b) => Math.log(a) / Math.log(b),
+            minecraftStyle: applyMinecraftStyle,
+          },
+        }, 
+        "out" : {
+          id: getId(),
+          type: 'customNode',
+          position,
+          data: {
+            label: 'Out',
+            inputs: 1,
+            outputs: 0,
+            inputValues: [],
+            outputValues: [],
+            nodeFunction: (a) => {},
             minecraftStyle: applyMinecraftStyle,
           },
         }
@@ -677,7 +701,7 @@ function NodeEditor() {
   };
 
   const handleFileInputChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
+    if (e.target.files && e.target.files[0]) {s
       handleFile(e.target.files[0]);
     }
   };
@@ -685,6 +709,9 @@ function NodeEditor() {
   const openFileBrowser = () => {
     // Only open file browser if no file is selected or after file is removed
     if (!newNode.file) {
+      if (applyMinecraftStyle) {
+        chestOpenRef.current?.play();
+      }
       fileInputRef.current.click();
     }
   };
@@ -867,7 +894,7 @@ function NodeEditor() {
           </div>
         </Panel>
         <Panel position="bottom">
-          <Sidebar />
+          <Sidebar minecraftStyle={applyMinecraftStyle}/>
         </Panel>
       </ReactFlow>
     </div>
