@@ -15,7 +15,7 @@ cyan: "#85dacc",
 
 .minecraft-text {
   font-family: Monocraft !important;
-  font-size: 10px !important;
+  /* font-size: 10px; */
   letter-spacing: 1px;
 }
 
@@ -105,6 +105,17 @@ cyan: "#85dacc",
   /* width: 100%; */
 }
 
+.type-label {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+  padding: 1px 3px;
+  border-radius: 4px;
+  font-size: 8px;
+  font-weight: bold;
+}
+
 /* React Flow specific styles */
 .react-flow__node {
   padding: 0 !important;
@@ -128,9 +139,9 @@ cyan: "#85dacc",
 }
 
 .react-flow__handle:has(.value-label) {
-  display: flexbox;
   min-width: 30px;
   max-width: 60px;
+  width: auto;
   height: 30px;
   justify-content: center;
   align-items: center;
@@ -139,6 +150,16 @@ cyan: "#85dacc",
   /* overflow:  */
   text-overflow: ellipsis;
   /* white-space: nowrap; */
+}
+
+.react-flow__handle:has(.type-label) {
+  height: 20px;
+  min-width: 30px;
+  width: auto;
+  justify-content: center;
+  align-self: center;
+
+  padding-inline: 0.5rem;
 }
 
 

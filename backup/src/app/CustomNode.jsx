@@ -94,35 +94,22 @@ function CustomNode({ id, data }) {
                 // width: '20px'
               }}
             >
-              <Handle
-                type="target"
-                position={Position.Left}
-                id={`input-${i}`}
-                style={{
-                  width: '10px',
-                  height: '10px',
-                  background: isNaN ? 'red' : (isConnected ? 'green' : 'white'),
-                  border: `2px solid ${getTypeColor(inputType)}`
-                }}
-              >
-              {/* Type indicator */}
               {!(hasValue && !isNaN) && (<span
                 className={`type-label ${minecraftStyle ? 'minecraft-text' : ''}`}
                 style={{
-                  position: 'absolute',
-                  left: '6px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
                   backgroundColor: getTypeColor(inputType),
-                  color: 'white',
-                  padding: '1px 3px',
-                  borderRadius: '4px',
-                  fontSize: '8px',
-                  fontWeight: 'bold'
+                  left: '10px'
                 }}
               >
                 {inputType}
               </span>)}
+              <Handle
+                type="target"
+                position={Position.Left}
+                id={`input-${i}`}
+                style={{ background: isNaN ? 'red' : (isConnected ? 'green' : 'white'), }}
+              >
+              {/* Type indicator */}
               {hasValue && !isNaN && (
                 <span className={`value-label ${minecraftStyle ? 'minecraft-text' : ''}`} >
                   {inputValues[i]}
@@ -150,35 +137,22 @@ function CustomNode({ id, data }) {
                 // width: '20px'
               }}
             >
-              <Handle
-                type="source"
-                position={Position.Right}
-                id={`output-${i}`}
-                style={{
-                  width: '10px',
-                  height: '10px',
-                  background: hasValue && !isNaN ? 'green' : 'red',
-                  border: `2px solid ${getTypeColor(outputType)}`
-                }}
-              >
-              {/* Type indicator */}
               <span
                 className={`type-label ${minecraftStyle ? 'minecraft-text' : ''}`}
                 style={{
-                  position: 'absolute',
-                  right: '0px',
-                  top: '30%',
-                  transform: 'translateY(-50%)',
                   backgroundColor: getTypeColor(outputType),
-                  color: 'white',
-                  padding: '1px 3px',
-                  borderRadius: '4px',
-                  fontSize: '8px',
-                  fontWeight: 'bold'
+                  right: '16px',
                 }}
               >
                 {outputType}
               </span>
+              <Handle
+                type="source"
+                position={Position.Right}
+                id={`output-${i}`}
+                style={{ background: hasValue && !isNaN ? 'green' : 'red', }}
+              >
+              {/* Type indicator */}
               {hasValue && !isNaN && (
                 <span className={`value-label ${minecraftStyle ? 'minecraft-text' : ''}`} >
                   {outputValues[i]}
