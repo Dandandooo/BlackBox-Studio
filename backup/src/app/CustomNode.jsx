@@ -83,7 +83,7 @@ function CustomNode({ id, data }) {
           const hasValue = inputValues[i] !== undefined;
           const isNaN = hasValue && Number.isNaN(inputValues[i]);
           const isConnected = hasValue;
-          const inputType = inputTypes[i] || 'any';
+          const inputType = inputTypes[i] || 'Any';
 
           return (
             <div
@@ -150,7 +150,7 @@ function CustomNode({ id, data }) {
         {Array.from({ length: outputs }).map((_, i) => {
           const hasValue = outputValues[i] !== undefined;
           const isNaN = hasValue && Number.isNaN(outputValues[i]);
-          const outputType = outputTypes[i] || 'any';
+          const outputType = outputTypes[i] || 'Any';
 
           return (
             <div

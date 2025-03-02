@@ -104,7 +104,7 @@ function NodeEditor() {
         inputs: 1,
         outputs: 0,
         inputValues: [],
-        inputTypes: ['any'],
+        inputTypes: ['Any'],
         outputValues: [],
         outputTypes: [],
         nodeFunction: (a, b) => "",
@@ -205,8 +205,8 @@ function NodeEditor() {
     const sourceType = sourceNode.data.outputTypes[sourcePortIndex];
     const targetType = targetNode.data.inputTypes[targetPortIndex];
 
-    // Allow connection only if types match or if one of them is 'any'
-    if (sourceType !== targetType && sourceType !== 'any' && targetType !== 'any') {
+    // Allow connection only if types match or if one of them is 'Any'
+    if (sourceType !== targetType && sourceType !== 'Any' && targetType !== 'Any') {
       console.warn(`Connection rejected: type mismatch - ${sourceType} cannot connect to ${targetType}`);
       return;
     }
@@ -311,8 +311,8 @@ function NodeEditor() {
         ...node.data,
         inputValues: Array(node.data.inputs).fill(undefined),
         // Make sure to preserve inputTypes and outputTypes
-        inputTypes: node.data.inputTypes || Array(node.data.inputs).fill('any'),
-        outputTypes: node.data.outputTypes || Array(node.data.outputs).fill('any')
+        inputTypes: node.data.inputTypes || Array(node.data.inputs).fill('Any'),
+        outputTypes: node.data.outputTypes || Array(node.data.outputs).fill('Any')
       }
     }));
 
@@ -578,11 +578,11 @@ function NodeEditor() {
     // Create default inputTypes and outputTypes if not provided
     const inputTypes = newNode.inputTypes.length > 0 
       ? newNode.inputTypes 
-      : Array(parseInt(newNode.inputs)).fill('any');
+      : Array(parseInt(newNode.inputs)).fill('Any');
     
     const outputTypes = newNode.outputTypes.length > 0 
       ? newNode.outputTypes 
-      : Array(parseInt(newNode.outputs)).fill('any');
+      : Array(parseInt(newNode.outputs)).fill('Any');
 
     const newNodeObj = {
       id: newNode.id,
@@ -720,7 +720,7 @@ function NodeEditor() {
             inputs: 1,
             outputs: 0,
             inputValues: [],
-            inputTypes: ['any'],
+            inputTypes: ['Any'],
             outputValues: [],
             outputTypes: [],
             nodeFunction: (a) => {},
@@ -906,7 +906,7 @@ function NodeEditor() {
                   <label>Input Types (comma separated):</label>
                   <input
                     type="text"
-                    placeholder="number,string,any"
+                    placeholder="Number,String,Any"
                     className="add-menu field"
                     value={newNode.inputTypes.join(',')}
                     onChange={(e) => {
@@ -919,7 +919,7 @@ function NodeEditor() {
                   <label>Output Types (comma separated):</label>
                   <input
                     type="text"
-                    placeholder="number,string,any"
+                    placeholder="Number,String,Any"
                     className="add-menu field"
                     value={newNode.outputTypes.join(',')}
                     onChange={(e) => {
