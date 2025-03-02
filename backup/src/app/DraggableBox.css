@@ -22,13 +22,14 @@ cyan: "#85dacc",
 .draggable-box {
   font-family: 'CaskaydiaCove Nerd Font', monospace;
   position: relative;
-  /* background-color: #6ab0f3;  */
-  background-color: #2C7FFF;
+  /* background-color: #6ab0f3; */
+  background-color: #3b80e7;
   width: 12rem; /* w-48 */
   height: 12rem; /* h-48 */
   color: white;
   padding: 1rem; /* p-4 */
   border-radius: 1rem; /* rounded-2xl */
+  border: 3px solid var(--draggable-box-border-color, #4360a1);
   /* overflow: hidden; */
   /* box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); */
 }
@@ -38,12 +39,31 @@ cyan: "#85dacc",
   background-size: cover;
   background-repeat: no-repeat;
   border-radius: 0;
+  border: none;
+  box-shadow: 0 0 2px 2px var(--draggable-box-mc-border-color, none);
   font-family: Monocraft !important;
+}
+
+.draggable-box.minecraft:hover {
+  box-shadow: 0 0 2px 2px var(--draggable-box-mc-border-color, red);
 }
 
 /* Add this rule to ensure no border radius on the drag handle in Minecraft mode */
 .draggable-box.minecraft .drag-handle {
   border-radius: 0;
+  background-color: #2C252570;
+}
+
+.draggable-box:hover {
+  box-shadow: 0 0 2px 2px var(--draggable-box-border-color, #4360a1);
+}
+
+.react-flow__node.selected {
+  /* margin-left: -2px; */
+  /* margin-top: -2px; */
+  /* border: 2px solid #f1cd7a !important; */
+  --draggable-box-border-color: #f1cd7a;
+  --draggable-box-mc-border-color: green;
 }
 
 .drag-handle.header {
@@ -53,40 +73,69 @@ cyan: "#85dacc",
 
 .drag-handle {
   font-weight: 800;
-  cursor: move;
+  color: white;
+  /* color: #252525; */
+  /* cursor: move; */
   position: absolute;
+  overflow: hidden;
   top: 0;
   left: 0;
   right: 0;
   height: 2rem; /* h-8 */
-  background-color: #2C252570; /* Semi-transparent background */
-  border-radius: 1rem 1rem 0 0; /* This is commented out already */
+  background-color: #2C252570;
+  border-bottom: 1px solid #252525;
+  border-radius: 0.8rem 0.8rem 0 0;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   padding-left: 0.5rem; /* px-2 */
   padding-right: 0.5rem;
+  z-index: 2; /* Ensure it stays above the node-content */
 }
 
 .drag-handle-title {
-  color: white;
-  font-size: 0.875rem; /* text-sm */
+  /* color: white; */
+  font-size: 1.5rem; /* text-sm */
   /* Make sure text is fully opaque */
   opacity: 1;
 }
 
 .node-content {
-  margin-top: 1.5rem; /* mt-6 */
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   user-select: none;
+  pointer-events: none; /* Allow clicks to pass through to elements below */
+  z-index: 1;
 }
 
 .function-display {
-  font-size: 0.75rem; /* text-xs */
-  padding: 1.25rem; /* p-5 */
+  font-size: 1rem;
   color: white;
-  overflow: auto;
-  white-space: pre-wrap;
-  max-height: 7rem;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  max-height: none; /* Remove previous height limit */
+  font-weight: bold;
+  text-overflow: ellipsis;
+  padding: 0.5rem;
+  /* Add shadow to make text readable over any background */
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Add specific styling for output nodes */
+.draggable-box[data-outputs="0"] .function-display {
+  font-size: 1.2rem;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 1);
 }
 
 .value-label {
@@ -127,7 +176,7 @@ cyan: "#85dacc",
 }
 
 .react-flow__node.selected {
-  border: 2px solid #6ab0f3;
+  border: 2px solid #f1cd7a;
 }
 
 .react-flow__handle {
