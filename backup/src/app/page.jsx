@@ -156,6 +156,7 @@ function NodeEditor() {
   const anvilUseRef = useRef(null);
   const chestOpenRef = useRef(null);
   const chestCloseRef = useRef(null);
+  const blockPlaceRef = useRef(null);
 
   // Initialize audio on component mount
   useEffect(() => {
@@ -164,6 +165,7 @@ function NodeEditor() {
     anvilUseRef.current = new Audio("/anvil_use.wav");
     chestOpenRef.current = new Audio("/chestopen.wav");
     chestCloseRef.current = new Audio("/chestclose.wav");
+    blockPlaceRef.current = new Audio("/Stone_dig1.mp3")
   }, []);
 
   // Form state for adding new nodes
@@ -782,7 +784,7 @@ function NodeEditor() {
       const newNode = nodeTypes[type]
 
       if (applyMinecraftStyle) {
-        anvilUseRef.current?.play();
+        blockPlaceRef.current?.play();
       }
       setNodes((nds) => nds.concat(newNode));
     },
