@@ -14,6 +14,12 @@ cyan: "#85dacc",
   letter-spacing: 1px;
 }
 
+.minecraft-text {
+  font-family: 'Press Start 2P', cursive !important;
+  font-size: 7px !important;
+  letter-spacing: 1px;
+}
+
 
 .draggable-box {
   position: relative;
