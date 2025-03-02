@@ -546,6 +546,7 @@ export default function NodeEditor() {
         onEdgesChange={handleEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
+        panOnScroll={true}
         fitView
       >
         <Controls />
