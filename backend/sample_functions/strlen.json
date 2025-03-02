@@ -1,0 +1,18 @@
+{
+  "id": "wordLength",
+  "type": "customNode",
+  "position": { 
+    "x": 500, 
+    "y": 300 
+  },
+  "data": {
+    "inputs": 1,
+    "outputs": 1,
+    "inputValues": [],
+    "inputTypes": ["String"],
+    "outputValues": [0],
+    "outputTypes": ["Number"],
+    "nodeFunction": "(str) => str.length",
+    "label": "Word Length Counter"
+  }
+}

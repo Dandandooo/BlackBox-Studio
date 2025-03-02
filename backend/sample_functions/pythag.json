@@ -1,0 +1,18 @@
+{
+  "id": "pythagorean",
+  "type": "customNode",
+  "position": { 
+    "x": 500, 
+    "y": 200 
+  },
+  "data": {
+    "inputs": 2,
+    "outputs": 1,
+    "inputValues": [],
+    "inputTypes": ["Number", "Number"],
+    "outputValues": [0],
+    "outputTypes": ["Number"],
+    "nodeFunction": "(a, b) => Math.sqrt(a * a + b * b)",
+    "label": "Pythagorean Theorem"
+  }
+}

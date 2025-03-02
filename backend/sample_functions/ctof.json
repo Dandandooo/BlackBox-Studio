@@ -1,0 +1,18 @@
+{
+  "id": "tempConverter",
+  "type": "customNode",
+  "position": { 
+    "x": 300, 
+    "y": 300 
+  },
+  "data": {
+    "inputs": 1,
+    "outputs": 1,
+    "inputValues": [],
+    "inputTypes": ["Number"],
+    "outputValues": [0],
+    "outputTypes": ["Number"],
+    "nodeFunction": "(celsius) => (celsius * 9/5) + 32",
+    "label": "(C to F)"
+  }
+}

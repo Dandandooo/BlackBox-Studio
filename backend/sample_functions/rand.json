@@ -1,0 +1,18 @@
+{
+  "id": "randomInt",
+  "type": "customNode",
+  "position": { 
+    "x": 700, 
+    "y": 300 
+  },
+  "data": {
+    "inputs": 2,
+    "outputs": 1,
+    "inputValues": [],
+    "inputTypes": ["Number", "Number"],
+    "outputValues": [0],
+    "outputTypes": ["Number"],
+    "nodeFunction": "(min, max) => Math.floor(Math.random() * (max - min + 1)) + min",
+    "label": "Random Integer"
+  }
+}

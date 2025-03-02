@@ -1,0 +1,18 @@
+{
+  "id": "stringReverser",
+  "type": "customNode",
+  "position": { 
+    "x": 700, 
+    "y": 200 
+  },
+  "data": {
+    "inputs": 1,
+    "outputs": 1,
+    "inputValues": [],
+    "inputTypes": ["String"],
+    "outputValues": [""],
+    "outputTypes": ["String"],
+    "nodeFunction": "(str) => str.split('').reverse().join('')",
+    "label": "String Reverser"
+  }
+}
