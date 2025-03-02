@@ -15,8 +15,6 @@ export function ChillNode({data, id}) {
   const [leftCount, setLeftCount] = useState(safeData.inputs.length ?? 0);
   const [rightCount, setRightCount] = useState(safeData.outputs.length ?? 0);
 
-  const [nodeHeight, setNodeHeight] = useState(60);
-
   const updateNodeInternals = useUpdateNodeInternals();
 
 
@@ -26,24 +24,20 @@ export function ChillNode({data, id}) {
 
 
   useEffect(() => {
-    if (nodeHeight !== calculatedHeight) {
-      setNodeHeight(calculatedHeight); // Update local state to apply height change
+    setNodes((nodes) =>
+      nodes.map((node) =>
+        node.id === id
+          ? {
+              ...node,
+              style: { ...node.style}, // Update node height
+            }
+          : node
+      )
+    );
 
-      setNodes((nodes) =>
-        nodes.map((node) =>
-          node.id === id
-            ? {
-                ...node,
-                style: { ...node.style, height: calculatedHeight }, // Update node height
-              }
-            : node
-        )
-      );
-
-      // Ensure React Flow updates the node dimensions
-      setTimeout(() => updateNodeInternals(id), 0);
-    }
-  }, [leftCount, rightCount, calculatedHeight, id, setNodes, updateNodeInternals, nodeHeight]);
+    // Ensure React Flow updates the node dimensions
+    setTimeout(() => updateNodeInternals(id), 0);
+  }, [leftCount, rightCount, calculatedHeight, id, setNodes, updateNodeInternals]);
 
 
   const handleExecChange = (e) => {
@@ -54,53 +48,60 @@ export function ChillNode({data, id}) {
 <div
   style={{
     // height: `${nodeHeight}px`,
-    // minWidth: "150px",
+    minHeight: Math.max(leftCount, rightCount) * 20 + 40,
+    minWidth: "100px",
+    // minHeight: "24px",
     // padding: "10px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    objectFit: "contain",
+    display: "block",
+    paddingInline: "10px",
+    // flexDirection: "column",
+    // alignItems: "center",
+    // objectFit: "contain",
   }}
 >
-  {safeData.header && <div>{safeData.header}</div>}
-
-  <div style={{display: "flex", flexDirection: "column", justifyContent: "space-around", alignItems: "center"}}>
-  {/* Left (input) Handles */}
-  {Array.from({ length: leftCount }).map((_, i) => (
-    <div key={`left-wrapper-${i}`} style={{position: "relative", alignItems: "center" }}>
-      <Handle
-        key={`left-${i}`}
-        type="target"
-        position={Position.Left}
-        id={`left-${i}`}
-        // style={{ top: 40 + i * 20 }}
-        style={{position: "absolute"}}
-      />
-      <div>{safeData.inputs[i]}</div>
-    </div>
-  ))}
+  <div style={{textAlign: "center", position: "sticky", width:"100%", height: "1.5rem", objectFit: "contain"}}>
+    {safeData.header}
   </div>
+  {/* {safeData.header && <div>{safeData.header}</div>} */}
+  <div>
 
-  {/* Right (output) Handles */}
-  {Array.from({ length: rightCount }).map((_, i) => (
-    <div key={`right-wrapper-${i}`} style={{ display: "flex", alignItems: "center" }}>
-      <Handle
-        key={`right-${i}`}
-        type="source"
-        position={Position.Right}
-        id={`right-${i}`}
-        style={{ top: 40 + i * 20 }}
-      />
-      <div>{safeData.outputs[i]}</div>
-    </div>
-  ))}
-  {/**/}
+  {/* Left (input) Handles */}
+  <div style={{display: "flex", flexDirection: "column", position: "fixed", left: "0", justifyContent: "space-evenly", height: "80%", bottom: "0"}}>
+    {Array.from({ length: leftCount }).map((_, i) => (
+      // <div key={`left-wrapper-${i}`} style={{position: "relative", alignItems: "center" }}>
+        <Handle
+          key={`left-${i}`}
+          type="target"
+          position={Position.Left}
+          id={`left-${i}`}
+          style={{ top: 20 + i * 20 }}
+          // style={{position: "relative"}}
+        />
+        // {/* <div>{safeData.inputs[i]}</div> */}
+      // </div>
+    ))}
+  </div>
   <input
         type="text"
         value={exec}
         onChange={handleExecChange}
         style={{ marginBottom: "10px", width: "100px", textAlign: "center" }}
       />
+
+  <div style={{display: "flex", flexDirection: "column", position: "absolute", right: "0", justifyContent: "space-evenly", height: "80%", bottom: "0"}}>
+    {/* Right (output) Handles */}
+    {Array.from({ length: rightCount }).map((_, i) => (
+        <Handle
+          key={`right-${i}`}
+          type="source"
+          position={Position.Right}
+          id={`right-${i}`}
+          style={{ top: 20 + i * 20 }}
+          // style={{position: "relative", marginBottom: "10px"}}
+        />
+    ))}
+  </div>
+  </div>
 </div>
 
   );
