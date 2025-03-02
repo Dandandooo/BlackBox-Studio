@@ -340,7 +340,7 @@ function NodeEditor() {
       // For source nodes with no inputs, calculate outputs
       if (node.data.inputs === 0) {
         try {
-          if (nodeFunction) {
+          if (node.data.nodeFunction) {
             const result = node.data.nodeFunction();
             node.data.outputValues = Array.isArray(result) ? result : [result];
           }
@@ -377,9 +377,11 @@ function NodeEditor() {
       if (hasAllRequiredInputs) {
         try {
           // Filter out undefined values from inputs that don't have connections
-          const result = node.data.nodeFunction(...node.data.inputValues);
-
-          node.data.outputValues = Array.isArray(result) ? result : [result];
+          if (node.data.nodeFunction) {
+            const result = node.data.nodeFunction(...node.data.inputValues);
+  
+            node.data.outputValues = Array.isArray(result) ? result : [result];
+          }
         } catch (error) {
           console.error(`Error calculating output for node ${nodeId}:`, error);
           node.data.outputValues = [];
