@@ -72,7 +72,7 @@ function NodeEditor() {
         inputValues: [],
         outputValues: [],
         nodeFunction: (a, b) => a + b,
-        label: 'add'
+        label: 'Add'
       }
     },
     {
@@ -85,7 +85,7 @@ function NodeEditor() {
         inputValues: [],
         outputValues: [],
         nodeFunction: (a, b) => a * b,
-        label: 'mult'
+        label: 'Mult'
       }
     },
     {
@@ -98,7 +98,7 @@ function NodeEditor() {
         inputValues: [],
         outputValues: [],
         nodeFunction: (a, b) => "",
-        label: 'output'
+        label: 'Out'
       }
     },
     {
@@ -111,7 +111,7 @@ function NodeEditor() {
         inputValues: [],
         outputValues: [],
         nodeFunction: (a, b) => a / b,
-        label: 'div'
+        label: 'Div'
       }
     },
     {
@@ -124,7 +124,7 @@ function NodeEditor() {
         inputValues: [],
         outputValues: [],
         nodeFunction: (a, b) => a - b,
-        label: 'sub'
+        label: 'Sub'
       }
     },
   ];
@@ -586,7 +586,7 @@ function NodeEditor() {
           type: 'customNode', // Set the type to 'customNode' (same as your 'add' node)
           position,
           data: {
-            label: 'Add Node', // You can customize this based on the type
+            label: 'Add', // You can customize this based on the type
             inputs: 2, // Default inputs for the 'add' node
             outputs: 1, // Default outputs for the 'add' node
             inputValues: [],
@@ -600,7 +600,7 @@ function NodeEditor() {
           type: 'customNode', // Set the type to 'customNode' (same as your 'add' node)
           position,
           data: {
-            label: 'Sub Node', // You can customize this based on the type
+            label: 'Sub', // You can customize this based on the type
             inputs: 2, // Default inputs for the 'add' node
             outputs: 1, // Default outputs for the 'add' node
             inputValues: [],
@@ -614,7 +614,7 @@ function NodeEditor() {
           type: 'customNode', // Set the type to 'customNode' (same as your 'add' node)
           position,
           data: {
-            label: 'Mult Node', // You can customize this based on the type
+            label: 'Mult', // You can customize this based on the type
             inputs: 2, // Default inputs for the 'add' node
             outputs: 1, // Default outputs for the 'add' node
             inputValues: [],
@@ -628,7 +628,7 @@ function NodeEditor() {
           type: 'customNode', // Set the type to 'customNode' (same as your 'add' node)
           position,
           data: {
-            label: 'Div Node', // You can customize this based on the type
+            label: 'Div', // You can customize this based on the type
             inputs: 2, // Default inputs for the 'add' node
             outputs: 1, // Default outputs for the 'add' node
             inputValues: [],
@@ -642,12 +642,54 @@ function NodeEditor() {
           type: 'customNode',
           position,
           data: {
-            label: 'Log Node',
+            label: 'Log',
             inputs: 2,
             outputs: 1,
             inputValues: [],
             outputValues: [],
             nodeFunction: (a, b) => Math.log(a) / Math.log(b),
+            minecraftStyle: applyMinecraftStyle,
+          },
+        }, 
+        "nop" : {
+          id: getId(),
+          type: 'customNode',
+          position,
+          data: {
+            label: 'Nop',
+            inputs: 1,
+            outputs: 1,
+            inputValues: [],
+            outputValues: [],
+            nodeFunction: (a) => a,
+            minecraftStyle: applyMinecraftStyle,
+          },
+        },
+        "dup" : {
+          id: getId(),
+          type: 'customNode',
+          position,
+          data: {
+            label: 'Dup',
+            inputs: 1,
+            outputs: 2,
+            inputValues: [],
+            outputValues: [],
+            nodeFunction: (a) => [a, a],
+            minecraftStyle: applyMinecraftStyle,
+          },
+        },
+        "out" : {
+          id: getId(),
+          type: 'customNode',
+          position,
+          data: {
+            label: 'Out',
+            inputs: 1,
+            outputs: 0,
+            inputValues: [],
+            outputValues: [],
+            nodeFunction: (a) => {},
             minecraftStyle: applyMinecraftStyle,
           },
         }
@@ -873,7 +915,7 @@ function NodeEditor() {
           </div>
         </Panel>
         <Panel position="bottom">
-          <Sidebar />
+          <Sidebar minecraftStyle={applyMinecraftStyle}/>
         </Panel>
       </ReactFlow>
     </div>
