@@ -99,7 +99,7 @@ impl Graph {
         outputs: Vec<Port<Vec<(usize, usize)>>>,
         behavior_type: BehaviorType, 
         behavior: Behavior
-    ) -> usize {
+    ) -> Result<usize, Box<dyn Error>> {
         let id = if let Some(top) = self.tombstones.pop() {
             top
         } else { 
@@ -107,21 +107,28 @@ impl Graph {
             self.nodes.len() - 1
         };
 
-        self.nodes[id] = Some(Node {
+
+        let mut new_node = Node {
             id,
             name,
             inputs,
             outputs,
             behavior_type,
             behavior
-        });
-        id
+        };
+
+        if (new_node.inputs.is_empty()) {
+            self.propogate(id)?;
+        }
+
+        self.nodes[id] = Some(new_node);
+        Ok(id)
     }
 
 
     pub fn add_node_from_file(&mut self, file: &Path) -> Result<usize, Box<dyn Error>>{
         let process = load_process(file)?;
-        Ok(self.add_node(
+        self.add_node(
             process.name,
             process.input_names.into_iter().zip(process.input_types.into_iter()).map(|(name, datatype)| Port::<Option<(usize, usize)>> {
                 name,
@@ -137,7 +144,7 @@ impl Graph {
             }).collect(),
             BehaviorType::Process { path: process.path, language: process.language},
             process.run
-        ))
+        )
     }
 
     // will fail of a cycle is made

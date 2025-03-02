@@ -113,7 +113,7 @@ pub fn parse_type(v: &Value) -> Result<DataType, Box<dyn Error>> {
     let literal = |str| -> Result<DataType, Box<dyn Error>> {
         match str {
             "string" => Ok(DataType::String),
-            "number" => Ok(DataType::Number),
+            "float" | "int"| "number" => Ok(DataType::Number),
             "bool" => Ok(DataType::Bool),
             _ => Err(format!("invalid type: {str}").into())
         }
