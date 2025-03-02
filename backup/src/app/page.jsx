@@ -581,39 +581,39 @@ export default function NodeEditor() {
         <Background gap={20} variant={applyMinecraftStyle? null : "dots"} />
 
         <Panel position="top-left">
-          <div className="add-menu bg-gray-700 p-4 rounded-md w-[200px] z-50">
+          <div className="add-menu">
 
             <h2 className="text-white text-lg mb-4">Add Node</h2>
             <form onSubmit={handleAddNode}>
               <input
                 type="text"
                 placeholder="Node ID"
-                className="add-menu.field w-full p-2 mb-2 rounded text-black"
+                className="add-menu.field"
                 value={newNode.id}
                 onChange={(e) => setNewNode({ ...newNode, id: e.target.value })}
               />
               <input
                 type="number"
                 placeholder="Inputs"
-                className="add-menu.field w-full p-2 mb-2 rounded text-black"
+                className="add-menu.field"
                 value={newNode.inputs}
                 onChange={(e) => setNewNode({ ...newNode, inputs: e.target.value })}
               />
               <input
                 type="number"
                 placeholder="Outputs"
-                className="add-menu.field w-full p-2 rounded text-black"
+                className="add-menu.field"
                 value={newNode.outputs}
                 onChange={(e) => setNewNode({ ...newNode, outputs: e.target.value })}
               />
               <input
                 type="text"
                 placeholder="Node Function"
-                className="add-menu.field w-full p-2 rounded text-black"
+                className="add-menu.field"
                 value={newNode.nodeFunction}
                 onChange={(e) => setNewNode({ ...newNode, nodeFunction: e.target.value })}
               />
-              <button type="submit" className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4">
+              <button type="submit" className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 center">
                 Add Node
               </button>
             </form>
