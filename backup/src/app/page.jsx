@@ -563,8 +563,10 @@ export default function NodeEditor() {
             if (applyMinecraftStyle) {
               if (node.data.outputs === 0) {
                 const fullyConnected =
-                  node.data.inputs > 0 &&
-                  node.data.inputValues.every(val => val !== undefined);
+                node.data.inputs > 0 &&
+                node.data.inputValues.length === node.data.inputs &&
+                node.data.inputValues.every(val => val !== undefined && !Number.isNaN(val));
+              
                 return fullyConnected ? '#FFD700' : '#7d5516'; // Yellow if connected, gray if not
               }
               if (node.data.inputs === 0) return 'red'; // Source node (redblock)

@@ -16,7 +16,10 @@ function CustomNode({ id, data }) {
   } = data;
   
   const isLampNode = outputs === 0;
-  const hasAllInputsConnected = inputs > 0 && inputValues.every(val => val !== undefined);
+  const hasAllInputsConnected =
+  inputs > 0 &&
+  inputValues.length === inputs &&
+  inputValues.every(val => val !== undefined && !Number.isNaN(val));
   
   const nodeBackgroundImage = minecraftStyle
     ? isLampNode
