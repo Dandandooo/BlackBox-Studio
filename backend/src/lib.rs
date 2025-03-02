@@ -1,18 +1,21 @@
-use std::path::{PathBuf};
+use std::error::Error;
+use serde::{Serialize, Deserialize};
+use std::path::{Path, PathBuf};
 use std::collections::VecDeque;
+use self::process::load_process;
 
 pub mod process;
 
 // TODO figure out what this type is supposed to be
-pub type Behavior = Box<dyn Fn(&Vec<String>) -> Result<Vec<String>, String>>;
+pub type Behavior = Box<dyn Fn(&Vec<String>) -> Result<Vec<String>, String> + Send + Sync + 'static>;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Deserialize, Serialize)]
 enum BehaviorType {
     Process { path: PathBuf, language: Option<String> },
     Builtin { name: String },
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Deserialize, Serialize)]
 enum DataType {
     FreeJson,                            // any arbitrary json object
     Json(Vec<(String, DataType)>),       // specific json object
@@ -24,26 +27,30 @@ enum DataType {
 }
 
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Deserialize, Serialize)]
 struct Port<T> {
     name: String,               // for pattern matching
     datatype: DataType,         // for type checking
+    #[serde(skip_serializing)]
     endpoint: T,    // for propogation
+    #[serde(skip_serializing)]
     value: Option<String>
 }
 
 
+#[derive(Serialize)]
 pub struct Node {
     id: usize,          // identification
     name: String,       // display name
     inputs: Vec<Port<Option<(usize, usize)>>>,
     outputs: Vec<Port<Vec<(usize, usize)>>>,
     behavior_type: BehaviorType,
+    #[serde(skip_serializing)]
     behavior: Behavior,    // TODO find signature
 }
 
 pub struct Graph {
-    nodes: Vec<Option<Node>>,       // tombstoning list
+    pub nodes: Vec<Option<Node>>,       // tombstoning list
     // stack that represents free nodes, look here first if we want to add another node, otherwise
     // just push to the end of nodes
     tombstones: Vec<usize>,
@@ -110,6 +117,28 @@ impl Graph {
             behavior
         });
         id
+    }
+
+
+    pub fn add_node_from_file(&mut self, file: &Path) -> Result<usize, Box<dyn Error>>{
+        let process = load_process(file)?;
+        Ok(self.add_node(
+            process.name,
+            process.input_names.into_iter().zip(process.input_types.into_iter()).map(|(name, datatype)| Port::<Option<(usize, usize)>> {
+                name,
+                datatype,
+                endpoint: None,
+                value: None,
+            }).collect(),
+            process.output_names.into_iter().zip(process.output_types.into_iter()).map(|(name, datatype)| Port::<Vec<(usize, usize)>> {
+                name,
+                datatype,
+                endpoint: vec![],
+                value: None,
+            }).collect(),
+            BehaviorType::Process { path: process.path, language: process.language},
+            process.run
+        ))
     }
 
     // will fail of a cycle is made

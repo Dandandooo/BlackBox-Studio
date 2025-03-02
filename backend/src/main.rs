@@ -1,7 +1,14 @@
 
+use std::{path::{Path, PathBuf}, sync::Mutex};
+
 use backend::Graph;
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 use serde::Deserialize;
+
+
+struct AppState {
+    graph: Mutex<Graph>
+}
 
 #[get("/api")]
 async fn serve() -> impl Responder {
@@ -10,27 +17,35 @@ async fn serve() -> impl Responder {
 
 #[derive(Deserialize)]
 struct QueryParams {
-    meta_path: String,
-    filename: String,
+    meta_dir: String,
 }
 
 #[get("/api/add_node")]
-async fn add_node(query: web::Query<QueryParams>) -> impl Responder {
-    let meta_path = &query.meta_path;
-    let filename = &query.filename;
+async fn add_node(state: web::Data<AppState>, query: web::Query<QueryParams>) -> impl Responder {
+    let meta_dir = &query.meta_dir;
 
+    let mut graph = state.graph.lock().unwrap();
+    let id = graph.add_node_from_file(&Path::new(&meta_dir));
     
-    HttpResponse::Ok().body(format!(
-        "Received meta_path: {}, filename: {}",
-        meta_path, filename
-    ))
+    match id {
+        Ok(id) => HttpResponse::Ok()
+                    .content_type("application/json")
+                    .json(&graph.nodes[id]),
+        Err(e) => HttpResponse::BadRequest().body(e.to_string())
+    }
 }
 
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
+
+    let state = web::Data::new(AppState {
+        graph: Mutex::new(Graph::new()),
+    });
+
+    HttpServer::new(move || {
         App::new()
+            .app_data(state.clone())
             .service(serve)
             .service(add_node)
     })

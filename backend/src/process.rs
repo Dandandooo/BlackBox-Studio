@@ -5,13 +5,14 @@ use std::error::Error;
 
 use std::fs::File;
 use std::io::BufReader;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 static META_NAME: &str = "meta.json";
 
 /*** 
 * METADATA STRUCTURE:
 * {
+*   "name" : "fart",
 *   "language": "python",
 *   "run": "./foo",
 *   "inputs": [
@@ -38,9 +39,17 @@ pub fn load_process(path: &Path) -> Result<Process, Box<dyn Error>>{
     let file = File::open(path)?;
     let reader = BufReader::new(file);
     let meta: Value = serde_json::from_reader(reader)?;
+
+    let name = meta["name"].as_str().ok_or_else(|| -> Box<dyn Error> {
+        "name was not a string".to_string().into()
+    })?.to_string();
+
+    let language = meta["name"].as_str().map(|str| str.to_string());
+
     let run_command = meta["run"].as_str().ok_or_else(|| -> Box<dyn Error> {
         "run was not a string".to_string().into()
     })?.to_string();
+
 
     let run = move |inputs: &Vec<String>| -> Result<Vec<String>, String> {
         let jsn = json!(inputs);
@@ -61,24 +70,42 @@ pub fn load_process(path: &Path) -> Result<Process, Box<dyn Error>>{
             .collect())
     };
 
-
-    let input_types = meta["inputs"]
+    let (input_names, input_types) = meta["inputs"]
                         .as_array()
                         .ok_or_else(|| "inputs is not a list".to_string())?
                         .iter()
-                        .map(parse_type)
-                        .collect::<Result<Vec<_>, _>>()?;
+                        .map(|input| 
+                            (input.as_object()
+                                .ok_or_else(|| "argument must be named".to_string())?
+                                .iter()
+                                .next()
+                                .map(|(k, v)| Ok::<(String, DataType), Box<dyn Error>>((k.clone(), parse_type(v)?)))
+                                .ok_or_else(|| "argument must have".to_string())?)
+                        )
+                        .collect::<Result<(Vec<_>, Vec<_>), _>>()?;
 
-    let output_types = meta["inputs"]
+    let (output_names, output_types) = meta["outputs"]
                         .as_array()
-                        .ok_or_else(|| "inputs is not a list".to_string())?
+                        .ok_or_else(|| "outputs is not a list".to_string())?
                         .iter()
-                        .map(parse_type)
-                        .collect::<Result<Vec<_>, _>>()?;
+                        .map(|output| 
+                            (output.as_object()
+                                .ok_or_else(|| "output must be named".to_string())?
+                                .iter()
+                                .next()
+                                .map(|(k, v)| Ok::<(String, DataType), Box<dyn Error>>((k.clone(), parse_type(v)?)))
+                                .ok_or_else(|| "output must have".to_string())?)
+                        )
+                        .collect::<Result<(Vec<_>, Vec<_>), _>>()?;
     
     Ok(Process {
+        name,
+        language,
+        path: path.to_path_buf(),
         run: Box::new(run),
+        input_names,
         input_types,
+        output_names,
         output_types,
     })
 }
@@ -116,8 +143,13 @@ pub fn parse_type(v: &Value) -> Result<DataType, Box<dyn Error>> {
 }
 
 
-struct Process {
-    run: Behavior,
-    input_types: Vec<DataType>,
-    output_types: Vec<DataType>,
+pub struct Process {
+    pub name: String,
+    pub language: Option<String>,
+    pub path: PathBuf,
+    pub run: Behavior,
+    pub input_names: Vec<String>,
+    pub input_types: Vec<DataType>,
+    pub output_names: Vec<String>,
+    pub output_types: Vec<DataType>,
 }
