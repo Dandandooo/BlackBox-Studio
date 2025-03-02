@@ -1,0 +1,10 @@
+{
+  "name": "69",
+  "location": "../outputint/meta.json",
+  "language": "python",
+  "run": "python3 ../outputint/number.py",
+  "inputs": [],
+  "outputs": [
+    {"out1": "number"}
+  ]
+}

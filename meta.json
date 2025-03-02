@@ -1,0 +1,14 @@
+{
+  "name": "balls",
+  "location": "../meta.json",
+  "language": "python",
+  "run": "python3 ../example.py",
+  "inputs": [
+    {"arg1": "string"},
+    {"arg2": "number"}
+  ],
+  "outputs": [
+    {"out1": "string"},
+    {"out2": "string"}
+  ]
+}

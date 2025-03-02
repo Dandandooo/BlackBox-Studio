@@ -121,6 +121,7 @@ pub fn parse_type(v: &Value) -> Result<DataType, Box<dyn Error>> {
 
     match v {
         Value::String(str) => literal(str),
+        Value::Number(_) => Ok(DataType::Number),
         Value::Array(vec) => Ok(DataType::Array(Box::new(
             parse_type(vec.first().ok_or_else(|| "array must specify inner type".to_string())?)?
         ))),

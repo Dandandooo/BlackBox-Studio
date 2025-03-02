@@ -246,7 +246,18 @@ function NodeEditor() {
       porta: sourcePortIndex,
       portb: targetPortIndex,
     }
+    
     console.log(edgeForBackend)
+
+    const apiUrl = `http://localhost:8000/api/add-connection?id_a=${params.source}&id_b=${params.target}&port_a=${sourcePortIndex}&port_b=${targetPortIndex}`;
+      fetch(apiUrl, {
+        method: 'GET',
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('API Response:', data);
+        })
+        .catch((error) => console.error('API Error:', error));
 
     // Set the edges with the filtered list plus the new edge
     setEdges([...filteredEdges, newEdge]);
@@ -329,8 +340,10 @@ function NodeEditor() {
       // For source nodes with no inputs, calculate outputs
       if (node.data.inputs === 0) {
         try {
-          const result = node.data.nodeFunction();
-          node.data.outputValues = Array.isArray(result) ? result : [result];
+          if (nodeFunction) {
+            const result = node.data.nodeFunction();
+            node.data.outputValues = Array.isArray(result) ? result : [result];
+          }
         } catch (error) {
           console.error(`Error calculating output for source node ${nodeId}:`, error);
           node.data.outputValues = [];
@@ -796,8 +809,13 @@ function NodeEditor() {
       // Place the new node at a unique Y position
       maxY = Math.max(...yPositionsAtMaxX, maxY) + nodeSpacingY;
     }
+
+    const outputValues = json.outputs.map(output => {
+      return output.value !== undefined && output.value !== null ? output.value : null;
+    });
+
     return {
-      id: `node_${json.id}`,
+      id: `${json.id}`,
       type: 'customNode',
       position: { x: maxX, y: maxY },
       data: {
@@ -805,9 +823,9 @@ function NodeEditor() {
         outputs: json.outputs.length,
         inputValues: Array(json.inputs.length).fill(null),
         inputTypes: json.inputs.map(input => input.datatype),
-        outputValues: Array(json.outputs.length).fill(null),
+        outputValues: outputValues,
         outputTypes: json.outputs.map(output => output.datatype),
-        nodeFunction: "Custom Function",
+        nodeFunction: undefined,
         label: json.name,
       },
     };
@@ -828,7 +846,7 @@ function NodeEditor() {
 
         // Validate the JSON structure (simple example, modify as needed)
         if (json.inputs && json.outputs && json.name) {
-          const apiUrl = `http://localhost:8000/api/add-node?meta_dir=${json.location}`;
+          const apiUrl = `http://localhost:8000/api/add-node?meta_path=${json.location}`;
           fetch(apiUrl, {
             method: 'GET',
           })
