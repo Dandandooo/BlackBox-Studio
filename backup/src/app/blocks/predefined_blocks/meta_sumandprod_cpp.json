@@ -1,0 +1,13 @@
+{
+    "name": "sumandprod_cpp",
+    "language": "cpp",
+    "run": "gcc sumandprod.cpp -o sumandprod && ./sumandprod",
+    "inputs": [
+        {"x": "float"},
+        {"y": "float"}
+    ],
+    "outputs": [
+        {"sum": "float"},
+        {"product": "float"}
+    ]
+}

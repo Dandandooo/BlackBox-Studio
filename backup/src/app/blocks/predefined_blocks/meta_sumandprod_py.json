@@ -1,0 +1,13 @@
+{
+    "name": "sumandprod_py",
+    "language": "python",
+    "run": "python ./sumandprod.py",
+    "inputs" : [
+        {"x": "float"},
+        {"y": "float"}
+    ],
+    "outputs" : [
+        {"sum": "float"},
+        {"product": "float"}
+    ]
+}
