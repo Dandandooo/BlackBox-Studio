@@ -903,7 +903,7 @@ function NodeEditor() {
               />
               <div className="type-fields">
                 <div>
-                  <label>Input Types (comma separated):</label>
+                  <label>Input Types:</label>
                   <input
                     type="text"
                     placeholder="Number,String,Any"
@@ -916,7 +916,7 @@ function NodeEditor() {
                   />
                 </div>
                 <div>
-                  <label>Output Types (comma separated):</label>
+                  <label>Output Types:</label>
                   <input
                     type="text"
                     placeholder="Number,String,Any"
