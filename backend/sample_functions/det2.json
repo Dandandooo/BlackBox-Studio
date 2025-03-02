@@ -1,0 +1,18 @@
+{
+  "id": "determinant",
+  "type": "customNode",
+  "position": { 
+    "x": 300, 
+    "y": 100 
+  },
+  "data": {
+    "inputs": 4,
+    "outputs": 1,
+    "inputValues": [],
+    "inputTypes": ["Number", "Number", "Number", "Number"],
+    "outputValues": [0],
+    "outputTypes": ["Number"],
+    "nodeFunction": "(a, b, c, d) => a * d - b * c",
+    "label": "Determinant"
+  }
+}

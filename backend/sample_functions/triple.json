@@ -1,0 +1,18 @@
+{
+  "id": "packageInputs",
+  "type": "customNode",
+  "position": { 
+    "x": 500, 
+    "y": 100 
+  },
+  "data": {
+    "inputs": 1,
+    "outputs": 3,
+    "inputValues": [],
+    "inputTypes": ["Number"],
+    "outputValues": [[]],
+    "outputTypes": ["Number", "Number", "Number"],
+    "nodeFunction": "(a) => [a, 2 * a, 3 * a]",
+    "label": "Three to Array"
+  }
+}

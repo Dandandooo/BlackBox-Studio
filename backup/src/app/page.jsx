@@ -879,28 +879,55 @@ function NodeEditor() {
         const base64String = e.target.result.split(',')[1]; // Extract base64 content from data URL
         const jsonString = atob(base64String); // Decode base64
         const json = JSON.parse(jsonString); // Parse JSON data
-        console.log(json)
+        // Evaluate the function string and convert it into an actual function
 
-        // Validate the JSON structure (simple example, modify as needed)
-        if (json.inputs && json.outputs && json.name) {
-          const apiUrl = `http://localhost:8000/api/add-node?meta_dir=${json.location}`;
-          fetch(apiUrl, {
-            method: 'GET',
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              console.log('API Response:', data);
-              const newNode = createNodeFromJson(data);
-              console.log(newNode)
-              setNodes(prev => [...prev, newNode]);
+        // Attach the evaluated function to the node
+        json.data.nodeFunction = eval(json.data.nodeFunction);
+        
+        const nodeSpacingX = 200; // Horizontal spacing
+        const nodeSpacingY = 100; // Vertical spacing
 
-              // setNewNode({ ...newNode});
-              setNeedsUpdate(true);
-            })
-            .catch((error) => console.error('API Error:', error));
-        } else {
-          console.error('Invalid node file structure');
+        let maxX = 100; // Default starting X
+        let maxY = 100; // Default starting Y
+
+        if (nodes.length > 0) {
+          maxX = Math.max(...nodes.map(node => node.position.x)) + nodeSpacingX;
+
+          // Find existing Y positions at maxX
+          const yPositionsAtMaxX = nodes
+            .filter(node => node.position.x === maxX - nodeSpacingX)
+            .map(node => node.position.y);
+
+          // Place the new node at a unique Y position
+          maxY = Math.max(...yPositionsAtMaxX, maxY) + nodeSpacingY;
         }
+        json.id = getId();
+        json.position.x = maxX;
+        json.position.y = maxY;
+
+        // Now, you can add the node to your state
+        setNodes(prev => [...prev, json]);
+        setNeedsUpdate(true);
+        // // Validate the JSON structure (simple example, modify as needed)
+        // if (json.inputs && json.outputs && json.name) {
+        //   const apiUrl = `http://localhost:8000/api/add-node?meta_dir=${json.location}`;
+        //   fetch(apiUrl, {
+        //     method: 'GET',
+        //   })
+        //     .then((response) => response.json())
+        //     .then((data) => {
+        //       console.log('API Response:', data);
+        //       const newNode = createNodeFromJson(data);
+        //       console.log(newNode)
+        //       setNodes(prev => [...prev, newNode]);
+
+        //       // setNewNode({ ...newNode});
+        //       setNeedsUpdate(true);
+        //     })
+        //     .catch((error) => console.error('API Error:', error));
+        // } else {
+        //   console.error('Invalid node file structure');
+        // }
       } catch (error) {
         console.error('Error parsing JSON:', error);
       }
