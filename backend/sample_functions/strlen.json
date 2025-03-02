@@ -13,6 +13,6 @@
     "outputValues": [0],
     "outputTypes": ["Number"],
     "nodeFunction": "(str) => str.length",
-    "label": "Word Length Counter"
+    "label": "String Len"
   }
 }

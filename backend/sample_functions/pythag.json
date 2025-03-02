@@ -13,6 +13,6 @@
     "outputValues": [0],
     "outputTypes": ["Number"],
     "nodeFunction": "(a, b) => Math.sqrt(a * a + b * b)",
-    "label": "Pythagorean Theorem"
+    "label": "Pythag"
   }
 }

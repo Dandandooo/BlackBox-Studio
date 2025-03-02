@@ -13,6 +13,6 @@
     "outputValues": [""],
     "outputTypes": ["String"],
     "nodeFunction": "(str) => str.split('').reverse().join('')",
-    "label": "String Reverser"
+    "label": "Str Reverse"
   }
 }

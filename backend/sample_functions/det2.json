@@ -13,6 +13,6 @@
     "outputValues": [0],
     "outputTypes": ["Number"],
     "nodeFunction": "(a, b, c, d) => a * d - b * c",
-    "label": "Determinant"
+    "label": "Det"
   }
 }

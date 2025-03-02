@@ -13,6 +13,6 @@
     "outputValues": [0],
     "outputTypes": ["Number"],
     "nodeFunction": "(celsius) => (celsius * 9/5) + 32",
-    "label": "(C to F)"
+    "label": "C to F"
   }
 }
