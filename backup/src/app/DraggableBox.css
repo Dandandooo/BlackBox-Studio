@@ -6,6 +6,14 @@ green: "#adda78",
 blue: "#6ab0f3",
 cyan: "#85dacc",
 */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+.minecraft-font {
+  font-family: 'Press Start 2P', cursive !important;
+  font-size: 10px !important;
+  letter-spacing: 1px;
+}
+
 
 .draggable-box {
   position: relative;

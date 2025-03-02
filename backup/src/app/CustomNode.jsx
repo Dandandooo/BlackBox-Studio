@@ -17,7 +17,11 @@ function CustomNode({ id, data }) {
     <div className={`draggable-box ${minecraftStyle ? 'minecraft' : ''}`}>
       {/* Header Section with Text */}
       <div className={`drag-handle ${minecraftStyle ? 'header' : ''}`}>
-        <h3 className="drag-handle-title">{label}</h3>
+          <h3
+      className={`drag-handle-title ${minecraftStyle ? 'minecraft-font' : ''}`}
+    >
+      {label}
+    </h3>
       </div>
 
       {/* Inputs on left side */}
