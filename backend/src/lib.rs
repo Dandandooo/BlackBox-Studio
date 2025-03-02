@@ -32,7 +32,6 @@ pub struct Port<T> {
     pub datatype: DataType,         // for type checking
     #[serde(skip_serializing)]
     pub endpoint: T,    // for propogation
-    #[serde(skip_serializing)]
     pub value: Option<String>
 }
 
