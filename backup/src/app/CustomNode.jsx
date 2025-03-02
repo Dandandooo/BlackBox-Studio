@@ -151,7 +151,7 @@ function CustomNode({ id, data }) {
       {/* Node Content */}
       <div className="node-content">
         <div className={`function-display ${minecraftStyle ? 'minecraft-text' : ''}`}>
-          {nodeFunction ? nodeFunction.toString() : "No function defined"}
+          {isLampNode ? "" : nodeFunction ? nodeFunction.toString() : "No function defined"}
         </div>
       </div>
     </div>
