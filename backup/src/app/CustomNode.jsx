@@ -12,7 +12,20 @@ function CustomNode({ id, data }) {
     label,
     minecraftStyle = false 
   } = data;
-
+  
+  const isLampNode = outputs === 0;
+  const hasAllInputsConnected = inputs > 0 && inputValues.every(val => val !== undefined);
+  
+  const nodeBackgroundImage = minecraftStyle
+    ? isLampNode
+      ? hasAllInputsConnected
+        ? 'url("/redstone_lamp_on.png")'
+        : 'url("/redstone_lamp_off.png")'
+      : inputs === 0
+      ? 'url("/redblock.jpg")'
+      : 'url("/block.jpg")'
+    : 'none';
+  
   const backgroundImage =
     minecraftStyle && inputs === 0
       ? 'url("/redblock.jpg")'
@@ -24,7 +37,7 @@ function CustomNode({ id, data }) {
     <div
       className={`draggable-box ${minecraftStyle ? 'minecraft' : ''}`}
       style={{
-        backgroundImage,
+        backgroundImage: nodeBackgroundImage,
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
       }}
