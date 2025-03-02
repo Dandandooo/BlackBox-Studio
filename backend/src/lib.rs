@@ -10,7 +10,7 @@ pub mod process;
 pub type Behavior = Box<dyn Fn(&Vec<String>) -> Result<Vec<String>, String> + Send + Sync + 'static>;
 
 #[derive(Debug, Eq, PartialEq, Deserialize, Serialize)]
-enum BehaviorType {
+pub enum BehaviorType {
     Process { path: PathBuf, language: Option<String> },
     Builtin { name: String },
 }
@@ -27,7 +27,7 @@ pub enum DataType {
 
 
 #[derive(Debug, Eq, PartialEq, Deserialize, Serialize)]
-struct Port<T> {
+pub struct Port<T> {
     pub name: String,               // for pattern matching
     pub datatype: DataType,         // for type checking
     #[serde(skip_serializing)]

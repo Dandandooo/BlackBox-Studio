@@ -12,13 +12,13 @@ struct AppState {
     graph: Mutex<Graph>
 }
 
-fn serialize_propagation(graph: &Graph, vals: Vec<usize>) -> Value{
-    let mut list = vals.iter()
-                        .filter_map(|id| graph.nodes[*id])
-                        .map(|node| json!({
-                            "inputs":  node.inputs.iter().map(|i| if let Some(s) = i.value {s} else {"{}".to_string()}).collect(),
-                            "outputs": node.outputs.iter().map(|i| if let Some(s) = i.value {s} else {"{}".to_string()}).collect(),
-                        })).collect();
+fn serialize_propagation(graph: &Graph, vals: &Vec<usize>) -> Value{
+    let list = vals.iter()
+                    .filter_map(|id| graph.nodes[*id].as_ref())
+                    .map(|node| json!({
+                        "inputs":  node.inputs.iter().map(|i| if let Some(s) = i.value.clone() {s} else {"{}".to_string()}).collect::<Vec<_>>(),
+                        "outputs": node.outputs.iter().map(|i| if let Some(s) = i.value.clone() {s} else {"{}".to_string()}).collect::<Vec<_>>(),
+                    })).collect();
     Value::Array(list)
 }
 
@@ -64,7 +64,7 @@ async fn add_connection(state: web::Data<AppState>, query: web::Query<Connection
     match prop {
         Ok(prop) => HttpResponse::Ok()
                     .content_type("application/json")
-                    .json(serialize_propagation(&graph, prop)),
+                    .json(serialize_propagation(&graph, &prop)),
         Err(e) => HttpResponse::BadRequest().body(e.to_string())
     }
 }
@@ -78,7 +78,7 @@ async fn remove_connection(state: web::Data<AppState>, query: web::Query<Connect
     match prop {
         Ok(prop) => HttpResponse::Ok()
                     .content_type("application/json")
-                    .json(serialize_propagation(&graph, prop)),
+                    .json(serialize_propagation(&graph, &prop)),
         Err(e) => HttpResponse::BadRequest().body(e.to_string())
     }
 }
@@ -97,7 +97,7 @@ async fn remove_node(state: web::Data<AppState>, query: web::Query<NodeRemovePar
     match prop {
         Ok(prop) => HttpResponse::Ok()
                     .content_type("application/json")
-                    .json(serialize_propagation(&graph, prop)),
+                    .json(serialize_propagation(&graph, &prop)),
         Err(e) => HttpResponse::BadRequest().body(e.to_string())
     }
 }
